@@ -66,9 +66,7 @@ def daily(db, API_URL, API_TOKEN):
     forex_tickers = ['USD', 'EUR', 'RUB', 'GBP', 'CNY', 'JPY', 'SGD', 'INR', 'CHF', 'AUD', 'CAD', 'HKD', 'MYR', 'NOK', 'NZD', 'ZAR', 'SEK',
                      'DKK', 'BRL', 'ZAC', 'MXN', 'TWD', 'KRW', 'CLP', 'CZK', 'HUF', 'IDR', 'ISK', 'MXV', 'PLN', 'TRY', 'UYU', 'XAUUSD', 'THB', 'SAR', 'ILS']
 
-    # stock_tickers = update_russel_3000_components(db, API_URL, API_TOKEN)
-
-    stock_tickers = ['AAPL']
+    stock_tickers = update_russel_3000_components(db, API_URL, API_TOKEN)
     update_fundamentals(db, stock_tickers, API_URL, API_TOKEN)
     update_eod(db, stock_tickers, API_URL, API_TOKEN)
     update_price_and_liqudity(db)
