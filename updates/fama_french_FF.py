@@ -178,33 +178,26 @@ def update_fama_french_expectations(db):
 
     fama_french_df = pd.read_sql(sql, con=db.get_bind())
 
-    sql = ''''''
-
-    i = 1
-    for idx, ticker in tqdm(enumerate(tickers, 1)):
+    for ticker in tqdm(tickers):
 
         try:
             expected_return = calculate_fama_french_expectation(
                 db, fama_french_df, ticker)
 
-            if np.isnan(expected_return):
-                raise
+            if not np.isnan(expected_return):
 
-            sql += f'''
-                UPDATE companies_display
-                SET fama_french_expectation = {expected_return}
-                WHERE ticker = '{ticker}'
-                ;
-            '''
+                sql = f'''
+                    UPDATE companies_display
+                    SET fama_french_expectation = {expected_return}
+                    WHERE ticker = '{ticker}'
+                    ;
+                '''
 
-            i += 1
-        except:
-            pass
-
-        if i % 20 == 0 or idx == workload:
-            if sql != '''''':
                 db.execute(sql)
                 db.commit()
+
+        except:
+            continue
 
     sql = '''
         WITH cte AS (

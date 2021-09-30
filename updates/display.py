@@ -256,7 +256,8 @@ def update_companies_display(db):
             price_cash_flow_arr,
             ticker,
             market_cap_USD,
-            relative_score
+            relative_score,
+            piotroski_score
         )
         SELECT
             cte2.time,
@@ -453,7 +454,8 @@ def update_companies_display(db):
             cte2.price_cash_flow_arr,
             cte2.ticker,
             cte2.market_cap_USD,
-            cte2.relative_score
+            cte2.relative_score,
+            cte2.piotroski_score
         FROM cte2
         ON CONFLICT(ticker) DO
         UPDATE
@@ -652,7 +654,8 @@ def update_companies_display(db):
             price_cash_flow_arr = EXCLUDED.price_cash_flow_arr,
             ticker = EXCLUDED.ticker,
             market_cap_USD = EXCLUDED.market_cap_USD,
-            relative_score = EXCLUDED.relative_score
+            relative_score = EXCLUDED.relative_score,
+            piotroski_score = EXCLUDED.piotroski_score
         ;
     '''
 

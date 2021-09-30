@@ -405,7 +405,8 @@ def calculate_change(db):
                 LAG(debt_to_revenue, 1) OVER w debt_to_revenue_1,
                 LAG(debt_to_revenue_ranker, 1) OVER w debt_to_revenue_ranker_1,
                 LAG(current_ratio, 1) OVER w current_ratio_1,
-                LAG(current_ratio_ranker, 1) OVER w current_ratio_ranker_1
+                LAG(current_ratio_ranker, 1) OVER w current_ratio_ranker_1,
+                LAG(outstanding_shares, 1) OVER w outstanding_shares_1
             FROM companies_annual
             WINDOW w AS (
                 PARTITION BY ticker
@@ -485,7 +486,8 @@ def calculate_change(db):
             debt_to_revenue_change = c.debt_to_revenue / NULLIF(cte.debt_to_revenue_1, 0),
             debt_to_revenue_ranker_change = c.debt_to_revenue_ranker / NULLIF(cte.debt_to_revenue_ranker_1, 0),
             current_ratio_change = c.current_ratio / NULLIF(cte.current_ratio_1, 0),
-            current_ratio_ranker_change = c.current_ratio_ranker / NULLIF(cte.current_ratio_ranker_1, 0)
+            current_ratio_ranker_change = c.current_ratio_ranker / NULLIF(cte.current_ratio_ranker_1, 0),
+            outstanding_shares_change = c.outstanding_shares / NULLIF(cte.outstanding_shares_1, 0)
         FROM cte
         WHERE c.ticker = cte.ticker
         AND c.time = cte.time
