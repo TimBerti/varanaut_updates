@@ -71,7 +71,7 @@ def calculate_metrics(db):
             price_cash_flow = market_cap / NULLIF(free_cashflow_ttm, 0),
             price_book = market_cap / NULLIF(total_assets - total_liabilities, 0),
             dividend_yield = - 100 * dividends_paid_ttm / NULLIF(market_cap, 0),
-            payout_ratio = 100 * dividends_paid_ttm / NULLIF(net_income_ttm, 0),
+            payout_ratio = - 100 * dividends_paid_ttm / NULLIF(net_income_ttm, 0),
             gross_profit_margin = 100 * gross_profit_ttm / NULLIF(total_revenue_ttm, 0),
             net_profit_margin = 100 * net_income_ttm / NULLIF(total_revenue_ttm, 0),
             operating_cash_flow_margin = 100 * total_cash_from_operating_activities_ttm / NULLIF(total_revenue_ttm, 0),
