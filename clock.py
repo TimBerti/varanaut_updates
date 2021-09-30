@@ -19,7 +19,7 @@ db = scoped_session(sessionmaker(bind=engine))
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=11)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=10, minute=17)
 def scheduled_job():
     daily(db, os.environ["API_URL"], os.environ["API_TOKEN"])
 
