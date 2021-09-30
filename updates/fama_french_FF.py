@@ -40,7 +40,7 @@ def update_fama_french_FFs(db):
         ORDER BY time DESC;
     '''
 
-    stocks_df = pd.read_sql(sql, con=db.engine).dropna()
+    stocks_df = pd.read_sql(sql, con=db.get_bind()).dropna()
 
     # Market Return (ACWI.INDX)
 
@@ -67,7 +67,7 @@ def update_fama_french_FFs(db):
         ON r.quarter = m.quarter
     '''
 
-    market_df = pd.read_sql(sql, con=db.engine)
+    market_df = pd.read_sql(sql, con=db.get_bind())
 
     # split in months
 
@@ -113,7 +113,7 @@ def update_fama_french_FFs(db):
 
     df = pd.DataFrame(factors, columns=['time', 'SMB', 'HML', 'CMA', 'RMW'])
     df = df.merge(market_df, on='time').dropna()
-    df.to_sql('fama_french_FFs', con=db.engine,
+    df.to_sql('fama_french_FFs', con=db.get_bind(),
               if_exists='replace', index=False)
 
     end = time()
@@ -140,7 +140,7 @@ def calculate_fama_french_expectation(db, fama_french_df, ticker):
         ;
     '''
 
-    stock_df = pd.read_sql(sql, con=db.engine)
+    stock_df = pd.read_sql(sql, con=db.get_bind())
 
     stock_df = stock_df.merge(fama_french_df, on='time')
 
@@ -162,7 +162,7 @@ def update_fama_french_expectations(db):
         SELECT DISTINCT ticker FROM companies_display;
     '''
 
-    tickers_df = pd.read_sql(sql, con=db.engine)
+    tickers_df = pd.read_sql(sql, con=db.get_bind())
 
     tickers = tickers_df['ticker']
 
@@ -174,7 +174,7 @@ def update_fama_french_expectations(db):
         SELECT * FROM public."fama_french_FFs";
     '''
 
-    fama_french_df = pd.read_sql(sql, con=db.engine)
+    fama_french_df = pd.read_sql(sql, con=db.get_bind())
 
     sql = ''''''
 

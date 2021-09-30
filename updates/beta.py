@@ -9,7 +9,7 @@ def get_tickers(db):
     SELECT ticker FROM companies_display;
     '''
 
-    df = pd.read_sql(sql, con=db.engine)
+    df = pd.read_sql(sql, con=db.get_bind())
 
     return df['ticker']
 

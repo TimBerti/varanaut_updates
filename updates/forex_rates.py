@@ -48,7 +48,7 @@ def update_forex_rates(db, tickers, API_URL, API_TOKEN):
                 df = df.set_index('time')
 
                 df.to_sql(f"{ticker.replace('.', '_dot_').replace('-', '_dash_')}_tmp",
-                          db.engine, if_exists='replace')
+                          db.get_bind(), if_exists='replace')
 
                 sql = f'''
                     CREATE TABLE IF NOT EXISTS {ticker.replace('.', '_dot_').replace('-', '_dash_')}_USD
