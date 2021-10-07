@@ -204,7 +204,8 @@ def update_fama_french_expectations(db):
                 db.execute(sql)
                 db.commit()
 
-        except:
+        except Exception as e:
+            print(e)
             continue
 
     sql = '''
