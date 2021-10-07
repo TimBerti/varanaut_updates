@@ -152,7 +152,7 @@ def calculate_fama_french_expectation(db, fama_french_df, ticker):
 
     x, *_ = np.linalg.lstsq(A[:-1], y, rcond=None)
 
-    return (np.dot(A[-1], x), *x)
+    return (np.dot(A[-1], x), *x.T)
 
 
 def update_fama_french_expectations(db):
