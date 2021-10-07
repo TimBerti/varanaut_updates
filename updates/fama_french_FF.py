@@ -150,9 +150,9 @@ def calculate_fama_french_expectation(db, fama_french_df, ticker):
                   'excess_market_return']].to_numpy()
     y = (stock_df['return'] - stock_df['risk_free_rate']).to_numpy()
 
-    x, *_ = np.linalg.lstsq(A[:-1], y, rcond=None)
+    x, *_ = np.linalg.lstsq(A[:-1], y[:-1], rcond=None)
 
-    return (np.dot(A[-1], x), *x.T)
+    return (np.dot(A[-1], x) - y[-1], *x)
 
 
 def update_fama_french_expectations(db):
@@ -164,9 +164,7 @@ def update_fama_french_expectations(db):
         SELECT DISTINCT ticker FROM companies_display;
     '''
 
-    tickers_df = pd.read_sql(sql, con=db.get_bind())
-
-    tickers = tickers_df['ticker']
+    tickers = pd.read_sql(sql, con=db.get_bind())['ticker']
 
     workload = len(tickers)
 
@@ -181,6 +179,7 @@ def update_fama_french_expectations(db):
     for ticker in tqdm(tickers):
 
         try:
+
             expected_return, SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = calculate_fama_french_expectation(
                 db, fama_french_df, ticker)
 
@@ -199,13 +198,10 @@ def update_fama_french_expectations(db):
                     ;
                 '''
 
-                print(sql)
-
                 db.execute(sql)
                 db.commit()
 
-        except Exception as e:
-            print(e)
+        except:
             continue
 
     sql = '''
