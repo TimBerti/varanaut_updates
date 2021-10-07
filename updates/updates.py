@@ -82,7 +82,7 @@ def daily(db, API_URL, API_TOKEN):
     # update_companies_display(db)
     # update_fama_french_FFs(db)
     update_fama_french_expectations(db)
-    # update_statistics(db)
+    update_statistics(db)
 
     end = time()
 
