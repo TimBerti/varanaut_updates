@@ -229,5 +229,10 @@ CREATE TABLE companies_display (
     average_volume double precision,
     fama_french_expectation_ranker double precision,
     piotroski_score double precision,
+    SMB_factor double precision,
+    HML_factor double precision,
+    CMA_factor double precision,
+    RMW_factor double precision,
+    excess_market_return_factor double precision,
     PRIMARY KEY (ticker)
 )

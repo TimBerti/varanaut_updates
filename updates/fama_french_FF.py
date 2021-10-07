@@ -152,7 +152,7 @@ def calculate_fama_french_expectation(db, fama_french_df, ticker):
 
     x, *_ = np.linalg.lstsq(A[:-1], y, rcond=None)
 
-    return np.dot(A[-1], x)
+    return np.dot(A[-1], x), x
 
 
 def update_fama_french_expectations(db):
@@ -181,14 +181,22 @@ def update_fama_french_expectations(db):
     for ticker in tqdm(tickers):
 
         try:
-            expected_return = calculate_fama_french_expectation(
+            expected_return, x = calculate_fama_french_expectation(
                 db, fama_french_df, ticker)
+
+            SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = x
 
             if not np.isnan(expected_return):
 
                 sql = f'''
                     UPDATE companies_display
-                    SET fama_french_expectation = {expected_return}
+                    SET 
+                        fama_french_expectation = {expected_return},
+                        SMB_factor = {SMB_factor},
+                        HML_factor = {HML_factor},
+                        CMA_factor = {CMA_factor},
+                        RMW_factor = {RMW_factor},
+                        excess_market_return_factor = {excess_market_return_factor}
                     WHERE ticker = '{ticker}'
                     ;
                 '''
