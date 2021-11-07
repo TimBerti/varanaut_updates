@@ -59,3 +59,87 @@ def update_clusters(db):
     end = time()
 
     print(f'Finished cluster update. ({end - start :.2f}s)')
+
+
+def update_cluster_correlation(db):
+    '''
+        Calculates correlation between the clusters and updates DB.
+    '''
+
+    start = time()
+
+    print('Started cluster correlation update...')
+
+    # data
+
+    sql = '''
+        SELECT 
+            ticker, 
+            time, 
+            adjusted_close,
+            adjusted_close / NULLIF(
+                LAG(adjusted_close) OVER (
+                    PARTITION BY ticker
+                    ORDER BY time
+                ), 0
+            ) AS return
+        FROM eod
+        WHERE time > CURRENT_DATE - INTERVAL '5 YEARS'
+    '''
+
+    prices = pd.read_sql(sql, con=db.get_bind())
+
+    sql = '''
+        SELECT
+            ticker,
+            cluster
+        FROM companies_display WHERE cluster IS NOT NULL
+    '''
+
+    clusters = pd.read_sql(sql, con=db.get_bind())
+
+    sql = '''
+        SELECT
+            ticker,
+            time,
+            outstanding_shares
+        FROM companies_quarterly 
+        WHERE outstanding_shares IS NOT NULL
+        AND time > CURRENT_DATE - INTERVAL '5 YEARS'
+    '''
+
+    shares = pd.read_sql(sql, con=db.get_bind())
+
+    # merge dfs
+
+    df = prices.merge(clusters, on='ticker', how='inner')
+
+    df['quarter'] = pd.DatetimeIndex(df['time']).to_period('Q')
+    shares['quarter'] = pd.DatetimeIndex(shares['time']).to_period('Q')
+    shares.drop('time', axis=1, inplace=True)
+
+    df = df.merge(shares, on=['ticker', 'quarter'], how='outer')
+
+    df['market_cap'] = df['adjusted_close'] * df['outstanding_shares']
+
+    df.dropna(inplace=True)
+
+    # calculate daily returns for each cluster
+
+    clusters = {}
+
+    for idx, cluster in df.groupby('cluster'):
+
+        clusters[idx] = cluster.groupby('time').apply(
+            lambda x: np.average(x['return'], weights=x['market_cap']))
+
+    cluster_df = pd.DataFrame(clusters)
+
+    # update db
+
+    cluster_df.corr().to_sql('cluster_correlation', con=db.get_bind(),
+                             index=False, if_exists='replace')
+
+    end = time()
+
+    print(f'Finished cluster correlation update. ({end - start :.2f}s)')
