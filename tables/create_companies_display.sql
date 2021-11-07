@@ -234,5 +234,6 @@ CREATE TABLE companies_display (
     CMA_factor double precision,
     RMW_factor double precision,
     excess_market_return_factor double precision,
+    cluster int,
     PRIMARY KEY (ticker)
 )

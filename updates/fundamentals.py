@@ -1,7 +1,7 @@
 import requests
 import json
 from tqdm import tqdm
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 # ToDo: update_display, update_quarterly
@@ -1138,7 +1138,7 @@ def update_quarterly(db, ticker, fundamentals):
         if fundamentals.get('outstandingShares') is not None:
             if fundamentals['outstandingShares'].get('quarterly') is not None:
                 for _, value in fundamentals['outstandingShares']['quarterly'].items():
-                    if value['dateFormatted'][:7] == values['time'][:7]:
+                    if abs((datetime.strptime(value['dateFormatted'], '%Y-%m-%d') - datetime.strptime(values['time'], '%Y-%m-%d')).total_seconds()) < timedelta(days=45).total_seconds():
                         values['outstanding_shares'] = value['shares']
                         break
 
