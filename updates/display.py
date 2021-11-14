@@ -257,6 +257,7 @@ def update_companies_display(db):
             ticker,
             market_cap_USD,
             relative_score,
+            relative_score_continuous,
             piotroski_score
         )
         SELECT
@@ -455,6 +456,7 @@ def update_companies_display(db):
             cte2.ticker,
             cte2.market_cap_USD,
             cte2.relative_score,
+            cte2.relative_score_continuous,
             cte2.piotroski_score
         FROM cte2
         ON CONFLICT(ticker) DO
@@ -655,6 +657,7 @@ def update_companies_display(db):
             ticker = EXCLUDED.ticker,
             market_cap_USD = EXCLUDED.market_cap_USD,
             relative_score = EXCLUDED.relative_score,
+            relative_score_continuous = EXCLUDED.relative_score_continuous,
             piotroski_score = EXCLUDED.piotroski_score
         ;
     '''

@@ -5,12 +5,13 @@ from .display import update_companies_display
 from .statistics import update_statistics
 from .eod import update_eod
 from .price_and_liquidity import update_price_and_liqudity
-from .s_and_p500 import update_historical_s_and_p500_components
+# from .s_and_p500 import update_historical_s_and_p500_components
 from .russell3000 import update_russel_3000_components
 from .forex_rates import update_forex_rates
 from .forex_rate import update_forex_rate
 from .market_cap import update_market_cap
 from .beta import update_beta
+from .rsi import update_rsi_180
 from .scores import update_scores
 from .fama_french_FF import update_fama_french_FFs, update_fama_french_expectations
 from .cluster import update_clusters, update_cluster_correlation
@@ -75,6 +76,7 @@ def daily(db, API_URL, API_TOKEN):
     # update_historical_s_and_p500_components(db, API_URL, API_TOKEN)
     update_market_cap(db)
     update_beta(db)
+    update_rsi_180(db)
     update_forex_rates(db, forex_tickers, API_URL, API_TOKEN)
     update_forex_rate(db)
     update_annual_figures(db)

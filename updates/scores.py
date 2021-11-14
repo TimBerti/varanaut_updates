@@ -23,6 +23,20 @@ def update_scores(db):
                 CASE WHEN debt_to_equity_ranker > 2.0/3 THEN 1 ELSE 0 END + 
                 CASE WHEN current_ratio_ranker > 2.0/3 THEN 1 ELSE 0 END 
             ),
+            relative_score_continuous = (
+                -- Valuation
+                price_book_ranker + 
+                price_sales_ranker + 
+                -- Profitability
+                asset_turnover_ranker + 
+                gross_profit_margin_ranker + 
+                -- Growth
+                revenue_growth_1y_ranker + 
+                revenue_growth_3y_ranker + 
+                -- Debt
+                debt_to_equity_ranker + 
+                current_ratio_ranker 
+            ),
             piotroski_score = (
                 -- Profitability
                 CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
@@ -52,6 +66,20 @@ def update_scores(db):
                 -- Debt
                 CASE WHEN debt_to_equity_ranker > 2.0/3 THEN 1 ELSE 0 END + 
                 CASE WHEN current_ratio_ranker > 2.0/3 THEN 1 ELSE 0 END 
+            ),
+            relative_score_continuous = (
+                -- Valuation
+                price_book_ranker + 
+                price_sales_ranker + 
+                -- Profitability
+                asset_turnover_ranker + 
+                gross_profit_margin_ranker + 
+                -- Growth
+                revenue_growth_1y_ranker + 
+                revenue_growth_3y_ranker + 
+                -- Debt
+                debt_to_equity_ranker + 
+                current_ratio_ranker 
             ),
             piotroski_score = (
                 -- Profitability

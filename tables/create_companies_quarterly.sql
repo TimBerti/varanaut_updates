@@ -275,5 +275,6 @@ CREATE TABLE companies_quarterly (
     price_cash_flow_ranker_change double precision,
     contained_in_s_and_p500 boolean,
     relative_score double precision,
+    relative_score_continuous double precision,
     piotroski_score double precision PRIMARY KEY (ticker, time)
 )

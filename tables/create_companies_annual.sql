@@ -268,5 +268,6 @@ CREATE TABLE companies_annual (
     contained_in_s_and_p500 boolean,
     piotroski_score double precision,
     outstanding_shares_change double precision,
+    relative_score_continuous double precision,
     PRIMARY KEY (ticker, time)
 )
