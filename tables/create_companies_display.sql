@@ -238,5 +238,6 @@ CREATE TABLE companies_display (
     relative_score_continuous double precision,
     rsi_180 double precision,
     combined_score double precision,
+    implied_volatility double precision,
     PRIMARY KEY (ticker)
 )

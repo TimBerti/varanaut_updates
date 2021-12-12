@@ -48,8 +48,6 @@ def update_eod(db, tickers, API_URL, API_TOKEN):
                 else:
                     print(f'Too many timeouts at {ticker}.')
 
-        eod = get_eod(ticker, API_URL, API_TOKEN)
-
         if eod is not None:
             if len(eod) > 0:
 
