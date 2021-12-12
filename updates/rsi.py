@@ -27,8 +27,8 @@ def update_rsi_180(db):
                             ), 0
                         ) - 1 AS return
                     FROM eod WHERE ticker = $1
+                    AND time > CURRENT_DATE - $2 * INTERVAL '1 day'
                     ORDER BY time DESC
-                    LIMIT $2
                 ) 
                 SELECT 
                     CASE WHEN return > 0 THEN return ELSE 0 END AS positive_return, 
