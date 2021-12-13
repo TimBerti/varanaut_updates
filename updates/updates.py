@@ -5,6 +5,7 @@ from .display import update_companies_display
 from .statistics import update_statistics
 from .eod import update_eod
 from .options import update_options
+from .inflation import update_cpi
 from .price_and_liquidity import update_price_and_liqudity
 # from .s_and_p500 import update_historical_s_and_p500_components
 from .russell3000 import update_russel_3000_components
@@ -57,7 +58,7 @@ def get_tickers(EOD_URL, EOD_TOKEN):
     return tickers
 
 
-def daily(db, EOD_URL, EOD_TOKEN):
+def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     '''
     Executes daily updates.
     '''
@@ -75,6 +76,7 @@ def daily(db, EOD_URL, EOD_TOKEN):
     stock_tickers += ['SPY', 'US10Y.GBOND']
     update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
     update_options(db, stock_tickers, EOD_URL, EOD_TOKEN)
+    update_cpi(db, NASDAQ_KEY)
     update_price_and_liqudity(db)
     # update_historical_s_and_p500_components(db, EOD_URL, EOD_TOKEN)
     update_market_cap(db)
