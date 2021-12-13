@@ -663,6 +663,20 @@ def update_companies_display(db):
             piotroski_score = EXCLUDED.piotroski_score,
             combined_score = EXCLUDED.relative_score_continuous / 8 * EXCLUDED.rsi_180 / 100
         ;
+        
+        WITH cte AS (
+            SELECT
+                ticker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (implied_volatility IS NOT NULL)
+                    ORDER BY implied_volatility
+                ) AS implied_volatility_ranker
+            FROM companies_display
+        )
+        UPDATE companies_display c
+        SET implied_volatility_ranker = cte.implied_volatility_ranker
+        FROM cte
+        WHERE c.ticker = cte.ticker;
     '''
 
     db.execute(sql)
