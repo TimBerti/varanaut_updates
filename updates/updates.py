@@ -70,6 +70,7 @@ def daily(db, API_URL, API_TOKEN):
                      'DKK', 'BRL', 'ZAC', 'MXN', 'TWD', 'KRW', 'CLP', 'CZK', 'HUF', 'IDR', 'ISK', 'MXV', 'PLN', 'TRY', 'UYU', 'XAUUSD', 'THB', 'SAR', 'ILS']
 
     stock_tickers = update_russel_3000_components(db, API_URL, API_TOKEN)
+    # stock_tickers = ['AAPL']
     update_fundamentals(db, stock_tickers, API_URL, API_TOKEN)
     stock_tickers += ['SPY', 'US10Y.GBOND']
     update_eod(db, stock_tickers, API_URL, API_TOKEN)
