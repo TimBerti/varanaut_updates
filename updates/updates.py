@@ -17,6 +17,7 @@ from .rsi import update_rsi_180
 from .scores import update_scores
 from .fama_french_FF import update_fama_french_FFs, update_fama_french_expectations
 from .cluster import update_clusters, update_cluster_correlation
+from .risk_factor import update_risk_factors
 from time import time
 from datetime import timedelta
 import requests
@@ -92,6 +93,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_fama_french_expectations(db)
     update_clusters(db)
     update_cluster_correlation(db)
+    update_risk_factors(db)
     update_statistics(db)
 
     end = time()

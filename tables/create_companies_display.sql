@@ -240,5 +240,11 @@ CREATE TABLE companies_display (
     combined_score double precision,
     implied_volatility double precision,
     implied_volatility_ranker double precision,
+    intrinsic_risk double precision,
+    equity_risk double precision,
+    interest_rate_risk double precision,
+    credit_risk double precision,
+    commodities_risk double precision,
+    inflation_risk double precision,
     PRIMARY KEY (ticker)
 )
