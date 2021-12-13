@@ -14,4 +14,4 @@ except:
 engine = create_engine(os.environ['DATABASE_URL'])
 db = scoped_session(sessionmaker(bind=engine))
 
-daily(db, os.environ["API_URL"], os.environ["API_TOKEN"])
+daily(db, os.environ["EOD_URL"], os.environ["EOD_TOKEN"])

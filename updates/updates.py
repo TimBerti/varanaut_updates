@@ -22,7 +22,7 @@ import requests
 import json
 
 
-def get_tickers(API_URL, API_TOKEN):
+def get_tickers(EOD_URL, EOD_TOKEN):
     '''
     Returns all available tickers of the api.
     '''
@@ -31,7 +31,7 @@ def get_tickers(API_URL, API_TOKEN):
 
     start = time()
 
-    url = API_URL + f'exchanges-list/?api_token={API_TOKEN}&fmt=json'
+    url = EOD_URL + f'exchanges-list/?api_token={EOD_TOKEN}&fmt=json'
     response = requests.get(url, timeout=60)
 
     exchanges = {exchange['Code'] for exchange in json.loads(response.content)}
@@ -43,8 +43,8 @@ def get_tickers(API_URL, API_TOKEN):
 
     for exchange in exchanges:
 
-        url = API_URL + \
-            f'exchange-symbol-list/{exchange}?api_token={API_TOKEN}&fmt=json'
+        url = EOD_URL + \
+            f'exchange-symbol-list/{exchange}?api_token={EOD_TOKEN}&fmt=json'
         response = requests.get(url, timeout=60)
 
         tickers += [f'{stock["Code"]}' + (f'.{exchange}' if exchange != 'US' else '')
@@ -57,7 +57,7 @@ def get_tickers(API_URL, API_TOKEN):
     return tickers
 
 
-def daily(db, API_URL, API_TOKEN):
+def daily(db, EOD_URL, EOD_TOKEN):
     '''
     Executes daily updates.
     '''
@@ -69,18 +69,18 @@ def daily(db, API_URL, API_TOKEN):
     forex_tickers = ['USD', 'EUR', 'RUB', 'GBP', 'CNY', 'JPY', 'SGD', 'INR', 'CHF', 'AUD', 'CAD', 'HKD', 'MYR', 'NOK', 'NZD', 'ZAR', 'SEK',
                      'DKK', 'BRL', 'ZAC', 'MXN', 'TWD', 'KRW', 'CLP', 'CZK', 'HUF', 'IDR', 'ISK', 'MXV', 'PLN', 'TRY', 'UYU', 'XAUUSD', 'THB', 'SAR', 'ILS']
 
-    stock_tickers = update_russel_3000_components(db, API_URL, API_TOKEN)
+    stock_tickers = update_russel_3000_components(db, EOD_URL, EOD_TOKEN)
     # stock_tickers = ['AAPL']
-    update_fundamentals(db, stock_tickers, API_URL, API_TOKEN)
+    update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
     stock_tickers += ['SPY', 'US10Y.GBOND']
-    update_eod(db, stock_tickers, API_URL, API_TOKEN)
-    update_options(db, stock_tickers, API_URL, API_TOKEN)
+    update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
+    update_options(db, stock_tickers, EOD_URL, EOD_TOKEN)
     update_price_and_liqudity(db)
-    # update_historical_s_and_p500_components(db, API_URL, API_TOKEN)
+    # update_historical_s_and_p500_components(db, EOD_URL, EOD_TOKEN)
     update_market_cap(db)
     update_beta(db)
     update_rsi_180(db)
-    update_forex_rates(db, forex_tickers, API_URL, API_TOKEN)
+    update_forex_rates(db, forex_tickers, EOD_URL, EOD_TOKEN)
     update_forex_rate(db)
     update_annual_figures(db)
     update_quarterly_figures(db)
