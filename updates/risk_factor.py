@@ -116,7 +116,7 @@ def update_risk_factors(db):
                 ((y - y.mean())**2).sum()
 
             risk_exposure = pd.DataFrame({'risk': ['intrinsic', 'equity', 'interest_rate', 'credit', 'commodities', 'inflation'], 'exposure':  [
-                                         1 - R2, R2*coefs[0]/coefs.sum(), R2*coefs[1]/coefs.sum(), R2*coefs[2]/coefs.sum(), R2*coefs[3]/coefs.sum(), R2*coefs[4]/coefs.sum()]})
+                                         1 - R2, R2*np.abs(coefs[0])/np.abs(coefs).sum(), R2*np.abs(coefs[1])/np.abs(coefs).sum(), R2*np.abs(coefs[2])/np.abs(coefs).sum(), R2*np.abs(coefs[3])/np.abs(coefs).sum(), R2*np.abs(coefs[4])/np.abs(coefs).sum()]})
 
             sql = f'''
                 UPDATE companies_display 
