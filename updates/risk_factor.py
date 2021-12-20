@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 from sklearn.linear_model import LinearRegression
 from time import time
 from tqdm import tqdm
+import logging
 
 
 def update_risk_factors(db):
@@ -119,12 +121,12 @@ def update_risk_factors(db):
             sql = f'''
                 UPDATE companies_display 
                 SET
-                    intrinsic_risk = {risk_exposure['exposure'][0]},
-                    equity_risk = {risk_exposure['exposure'][1]},
-                    interest_rate_risk = {risk_exposure['exposure'][2]},
-                    credit_risk = {risk_exposure['exposure'][3]},
-                    commodities_risk = {risk_exposure['exposure'][4]},
-                    inflation_risk = {risk_exposure['exposure'][5]}
+                    intrinsic_risk = {risk_exposure['exposure'][0] if not np.isnan(risk_exposure['exposure'][0]) else 'NULL'},
+                    equity_risk = {risk_exposure['exposure'][1] if not np.isnan(risk_exposure['exposure'][1]) else 'NULL'},
+                    interest_rate_risk = {risk_exposure['exposure'][2] if not np.isnan(risk_exposure['exposure'][2]) else 'NULL'},
+                    credit_risk = {risk_exposure['exposure'][3] if not np.isnan(risk_exposure['exposure'][3]) else 'NULL'},
+                    commodities_risk = {risk_exposure['exposure'][4] if not np.isnan(risk_exposure['exposure'][4]) else 'NULL'},
+                    inflation_risk = {risk_exposure['exposure'][5] if not np.isnan(risk_exposure['exposure'][5]) else 'NULL'}
                 WHERE ticker = '{ticker}'
             '''
 
@@ -132,6 +134,7 @@ def update_risk_factors(db):
             db.commit()
 
         except:
+            logging.exception(ticker)
             pass
 
     end = time()

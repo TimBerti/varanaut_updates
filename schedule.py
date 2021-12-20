@@ -3,7 +3,9 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 import os
+import logging
 
+logging.basicConfig(filename='error.log', level=logging.ERROR)
 
 try:
     load_dotenv()
