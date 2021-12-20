@@ -71,30 +71,30 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     forex_tickers = ['USD', 'EUR', 'RUB', 'GBP', 'CNY', 'JPY', 'SGD', 'INR', 'CHF', 'AUD', 'CAD', 'HKD', 'MYR', 'NOK', 'NZD', 'ZAR', 'SEK',
                      'DKK', 'BRL', 'ZAC', 'MXN', 'TWD', 'KRW', 'CLP', 'CZK', 'HUF', 'IDR', 'ISK', 'MXV', 'PLN', 'TRY', 'UYU', 'XAUUSD', 'THB', 'SAR', 'ILS']
 
-    # stock_tickers = update_russel_3000_components(db, EOD_URL, EOD_TOKEN)
-    # # stock_tickers = ['AAPL']
-    # update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
-    # stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH']
-    # update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
-    # update_options(db, stock_tickers, EOD_URL, EOD_TOKEN)
-    # update_cpi(db, NASDAQ_KEY)
-    # update_price_and_liqudity(db)
-    # # update_historical_s_and_p500_components(db, EOD_URL, EOD_TOKEN)
-    # update_market_cap(db)
-    # update_beta(db)
-    # update_rsi_180(db)
-    # # update_forex_rates(db, forex_tickers, EOD_URL, EOD_TOKEN)
-    # # update_forex_rate(db)
-    # update_annual_figures(db)
-    # update_quarterly_figures(db)
-    # update_scores(db)
-    # update_companies_display(db)
-    # update_fama_french_FFs(db)
-    # update_fama_french_expectations(db)
-    # update_clusters(db)
-    # update_cluster_correlation(db)
+    stock_tickers = update_russel_3000_components(db, EOD_URL, EOD_TOKEN)
+    # stock_tickers = ['AAPL']
+    update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
+    stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH']
+    update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
+    update_options(db, stock_tickers, EOD_URL, EOD_TOKEN)
+    update_cpi(db, NASDAQ_KEY)
+    update_price_and_liqudity(db)
+    # update_historical_s_and_p500_components(db, EOD_URL, EOD_TOKEN)
+    update_market_cap(db)
+    update_beta(db)
+    update_rsi_180(db)
+    # update_forex_rates(db, forex_tickers, EOD_URL, EOD_TOKEN)
+    # update_forex_rate(db)
+    update_annual_figures(db)
+    update_quarterly_figures(db)
+    update_scores(db)
+    update_companies_display(db)
+    update_fama_french_FFs(db)
+    update_fama_french_expectations(db)
+    update_clusters(db)
+    update_cluster_correlation(db)
     update_risk_factors(db)
-    # update_statistics(db)
+    update_statistics(db)
 
     end = time()
 
