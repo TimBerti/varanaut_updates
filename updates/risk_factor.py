@@ -110,27 +110,27 @@ def update_risk_factors(db):
 
             reg = LinearRegression().fit(X, y)
 
-            coefs = reg.coef_
-
             R2 = 1 - ((y - reg.predict(X))**2).sum() / \
                 ((y - y.mean())**2).sum()
 
-            risk_exposure = pd.DataFrame({'risk': ['intrinsic', 'equity', 'interest_rate', 'credit', 'commodities', 'inflation'], 'exposure':  [
-                                         1 - R2, R2*np.abs(coefs[0])/np.abs(coefs).sum(), R2*np.abs(coefs[1])/np.abs(coefs).sum(), R2*np.abs(coefs[2])/np.abs(coefs).sum(), R2*np.abs(coefs[3])/np.abs(coefs).sum(), R2*np.abs(coefs[4])/np.abs(coefs).sum()]})
+            coefs = R2 * np.abs(reg.coef_) / np.abs(reg.coef_).sum()
+
+            risk_exposure = {'intrinsic': 1 - R2, 'equity': coefs[0], 'interest_rate': coefs[1],
+                             'credit': coefs[2], 'commodities': coefs[3], 'inflation': coefs[4]}
 
             sql = f'''
                 UPDATE companies_display 
                 SET
-                    intrinsic_risk = {risk_exposure['exposure'][0] if not np.isnan(risk_exposure['exposure'][0]) else 'NULL'},
-                    equity_risk = {risk_exposure['exposure'][1] if not np.isnan(risk_exposure['exposure'][1]) else 'NULL'},
-                    interest_rate_risk = {risk_exposure['exposure'][2] if not np.isnan(risk_exposure['exposure'][2]) else 'NULL'},
-                    credit_risk = {risk_exposure['exposure'][3] if not np.isnan(risk_exposure['exposure'][3]) else 'NULL'},
-                    commodities_risk = {risk_exposure['exposure'][4] if not np.isnan(risk_exposure['exposure'][4]) else 'NULL'},
-                    inflation_risk = {risk_exposure['exposure'][5] if not np.isnan(risk_exposure['exposure'][5]) else 'NULL'}
+                    intrinsic_risk = :intrinsic,
+                    equity_risk = :equity,
+                    interest_rate_risk = :interest_rate,
+                    credit_risk = :credit,
+                    commodities_risk = :commodities,
+                    inflation_risk = :inflation
                 WHERE ticker = '{ticker}'
             '''
 
-            db.execute(sql)
+            db.execute(sql, risk_exposure)
             db.commit()
 
         except:
