@@ -3,7 +3,7 @@ from time import time
 
 def update_companies_display(db):
     '''
-    Updates companies_display with values in companies_analytics.
+    Updates companies_display with values in companies_quarterly.
     '''
 
     print('Updating companies_display...')

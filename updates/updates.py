@@ -30,8 +30,8 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
 
     etf_tickers = ['VTI', 'ESGV']
 
-    stock_tickers = update_etfs(db, etf_tickers, EOD_URL, EOD_TOKEN)
-    # # stock_tickers = ['AAPL']
+    # stock_tickers = update_etfs(db, etf_tickers, EOD_URL, EOD_TOKEN)
+    stock_tickers = ['AAPL']
     update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
     stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH']
     update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
@@ -41,8 +41,8 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_market_cap(db)
     update_beta(db)
     update_rsi_180(db)
-    update_annual_figures(db)
     update_quarterly_figures(db)
+    update_annual_figures(db)
     update_scores(db)
     update_companies_display(db)
     update_fama_french_factors(db)

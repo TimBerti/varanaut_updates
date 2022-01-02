@@ -89,10 +89,10 @@ def calculate_growth(db):
             earnings_growth_3y = 100 * (((CASE WHEN c.net_income > 0 THEN c.net_income ELSE NULL END) / (CASE WHEN cte.net_income_3 > 0 THEN cte.net_income_3 ELSE NULL END)) ^ (1.0/3) - 1),
             earnings_growth_5y = 100 * (((CASE WHEN c.net_income > 0 THEN c.net_income ELSE NULL END) / (CASE WHEN cte.net_income_5 > 0 THEN cte.net_income_5 ELSE NULL END)) ^ (1.0/5) - 1),
             earnings_growth_9y = 100 * (((CASE WHEN c.net_income > 0 THEN c.net_income ELSE NULL END) / (CASE WHEN cte.net_income_9 > 0 THEN cte.net_income_9 ELSE NULL END)) ^ (1.0/9) - 1),
-            dividend_growth_1y = 100 * ((CASE WHEN c.dividends_paid > 0 THEN c.dividends_paid ELSE NULL END) / (CASE WHEN cte.dividend_1 > 0 THEN cte.dividend_1 ELSE NULL END) - 1),
-            dividend_growth_3y = 100 * (((CASE WHEN c.dividends_paid > 0 THEN c.dividends_paid ELSE NULL END) / (CASE WHEN cte.dividend_3 > 0 THEN cte.dividend_3 ELSE NULL END)) ^ (1.0/3) - 1),
-            dividend_growth_5y = 100 * (((CASE WHEN c.dividends_paid > 0 THEN c.dividends_paid ELSE NULL END) / (CASE WHEN cte.dividend_5 > 0 THEN cte.dividend_5 ELSE NULL END)) ^ (1.0/5) - 1),
-            dividend_growth_9y = 100 * (((CASE WHEN c.dividends_paid > 0 THEN c.dividends_paid ELSE NULL END) / (CASE WHEN cte.dividend_9 > 0 THEN cte.dividend_9 ELSE NULL END)) ^ (1.0/9) - 1)
+            dividend_growth_1y = 100 * (ABS(c.dividends_paid) / NULLIF(ABS(cte.dividend_1), 0) - 1),
+            dividend_growth_3y = 100 * ((ABS(c.dividends_paid) / NULLIF(ABS(cte.dividend_3), 0)) ^ (1.0/3) - 1),
+            dividend_growth_5y = 100 * ((ABS(c.dividends_paid) / NULLIF(ABS(cte.dividend_5), 0)) ^ (1.0/5) - 1),
+            dividend_growth_9y = 100 * ((ABS(c.dividends_paid) / NULLIF(ABS(cte.dividend_9), 0)) ^ (1.0/9) - 1)
         FROM cte
         WHERE c.ticker = cte.ticker
         AND c.time = cte.time
