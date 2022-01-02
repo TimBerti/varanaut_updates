@@ -122,9 +122,9 @@ def update_fama_french_factors(db):
     print(f'Finished fama and french 5 factors update. ({end - start :.2f}s)')
 
 
-def calculate_fama_french_expectation(db, fama_french_df, ticker):
+def calculate_fama_french_regressions(db, fama_french_df, ticker):
     '''
-    Calculate expected return of ticker based on the fama and french five factor model
+    Calculate fama and french regression coefficients for ticker
     '''
 
     sql = f'''
@@ -154,9 +154,9 @@ def calculate_fama_french_expectation(db, fama_french_df, ticker):
     return (np.dot(A[-1], x) - y[-1], *x)
 
 
-def update_fama_french_expectations(db):
+def update_fama_french_regressions(db):
     '''
-    Updates fama_french_expecations in db.
+    Updates fama and french regressions in db.
     '''
 
     sql = '''
@@ -167,7 +167,7 @@ def update_fama_french_expectations(db):
 
     workload = len(tickers)
 
-    print(f'Started fama and french expecations update. Workload: {workload}')
+    print(f'Started fama and french regressions update. Workload: {workload}')
 
     sql = '''
         SELECT * FROM public."fama_french_factors";
@@ -179,7 +179,7 @@ def update_fama_french_expectations(db):
 
         try:
 
-            expected_return, SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = calculate_fama_french_expectation(
+            expected_return, SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = calculate_fama_french_regressions(
                 db, fama_french_df, ticker)
 
             if not np.isnan(expected_return):
@@ -225,4 +225,4 @@ def update_fama_french_expectations(db):
     db.execute(sql)
     db.commit()
 
-    print('Finished fama and french expecations update.')
+    print('Finished fama and french regressions update.')

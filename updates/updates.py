@@ -12,7 +12,7 @@ from .market_cap import update_market_cap
 from .beta import update_beta
 from .rsi import update_rsi_180
 from .scores import update_scores
-from .fama_french import update_fama_french_factors, update_fama_french_expectations
+from .fama_french import update_fama_french_factors, update_fama_french_regressions
 from .cluster import update_clusters, update_cluster_correlation
 from .risk_factor import update_risk_factors
 from time import time
@@ -46,7 +46,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_scores(db)
     update_companies_display(db)
     update_fama_french_factors(db)
-    update_fama_french_expectations(db)
+    update_fama_french_regressions(db)
     update_clusters(db)
     update_cluster_correlation(db)
     update_risk_factors(db)
