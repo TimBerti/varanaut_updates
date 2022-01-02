@@ -47,6 +47,7 @@ CREATE TABLE companies_display (
     market_cap_change FLOAT8,
     market_cap_ranker FLOAT8,
     market_cap_ranker_change FLOAT8,
+    market_cap_USD FLOAT8,
     price_earnings FLOAT8,
     price_earnings_change FLOAT8,
     price_earnings_ranker FLOAT8,

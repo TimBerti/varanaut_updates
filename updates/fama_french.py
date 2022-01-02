@@ -4,7 +4,7 @@ from tqdm import tqdm
 from time import time
 
 
-def update_fama_french_FFs(db):
+def update_fama_french_factors(db):
     '''
     Calculates the quarterly factors of the fama and french five factors model for the last 10 years.
     '''
@@ -114,7 +114,7 @@ def update_fama_french_FFs(db):
 
     df = pd.DataFrame(factors, columns=['time', 'SMB', 'HML', 'CMA', 'RMW'])
     df = df.merge(market_df, on='time').dropna()
-    df.to_sql('fama_french_FFs', con=db.get_bind(),
+    df.to_sql('fama_french_factors', con=db.get_bind(),
               if_exists='replace', index=False)
 
     end = time()
@@ -170,7 +170,7 @@ def update_fama_french_expectations(db):
     print(f'Started fama and french expecations update. Workload: {workload}')
 
     sql = '''
-        SELECT * FROM public."fama_french_FFs";
+        SELECT * FROM public."fama_french_factors";
     '''
 
     fama_french_df = pd.read_sql(sql, con=db.get_bind())

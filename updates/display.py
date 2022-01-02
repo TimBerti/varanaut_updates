@@ -669,15 +669,13 @@ def update_companies_display(db):
         UPDATE companies_display c
         SET 
             implied_volatility_ranker = cte.implied_volatility_ranker,
-            combined_score = relative_score_continuous / 8 * rsi_180 / 100
+            combined_score = c.relative_score_continuous / 8 * rsi_180 / 100,
+            esg = c.ticker IN (
+                SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
+            ),
+            market_cap_USD = c.market_cap
         FROM cte
         WHERE c.ticker = cte.ticker;
-        
-        UPDATE companies_display SET
-            esg = ticker IN (
-                SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
-            )
-        ;
     '''
 
     db.execute(sql)
