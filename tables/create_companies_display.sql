@@ -223,7 +223,6 @@ CREATE TABLE companies_display (
     price_cash_flow_arr FLOAT8 [],
     stock_prices FLOAT8 [] [],
     fama_french_expectation double precision,
-    market_cap_USD double precision,
     relative_score double precision,
     stock_price double precision,
     average_volume double precision,
@@ -246,5 +245,14 @@ CREATE TABLE companies_display (
     credit_risk double precision,
     commodities_risk double precision,
     inflation_risk double precision,
+    esg boolean,
+    daily_return double precision,
+    weekly_return double precision,
+    monthly_return double precision,
+    quarterly_return double precision,
+    semi_annual_return double precision,
+    annual_return double precision,
+    two_year_return double precision,
+    three_year_return double precision,
     PRIMARY KEY (ticker)
 )

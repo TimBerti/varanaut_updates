@@ -40,16 +40,16 @@ def update_scores(db):
             piotroski_score = (
                 -- Profitability
                 CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
-                CASE WHEN total_cash_from_operating_activities > 0 THEN 1 ELSE 0 END + 
-                CASE WHEN return_on_assets_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN total_cash_from_operating_activities / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
+                CASE WHEN free_cashflow > 0 THEN 1 ELSE 0 END + 
+                CASE WHEN return_on_assets_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN free_cashflow / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
                 -- Leverage, Liquidity and Source of Funds 
-                CASE WHEN debt_to_equity_change < 1 THEN 1 ELSE 0 END + 
-                CASE WHEN current_ratio_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN outstanding_shares_change < 1 THEN 1 ELSE 0 END + 
+                CASE WHEN debt_to_equity_change <= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN current_ratio_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN outstanding_shares_change <= 1 THEN 1 ELSE 0 END + 
                 -- Operating Efficiency
-                CASE WHEN gross_profit_margin_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN asset_turnover_change > 1 THEN 1 ELSE 0 END
+                CASE WHEN gross_profit_margin_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN asset_turnover_change >= 1 THEN 1 ELSE 0 END
             )
         ;
         UPDATE companies_quarterly SET
@@ -84,16 +84,16 @@ def update_scores(db):
             piotroski_score = (
                 -- Profitability
                 CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
-                CASE WHEN total_cash_from_operating_activities > 0 THEN 1 ELSE 0 END + 
-                CASE WHEN return_on_assets_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN total_cash_from_operating_activities / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
+                CASE WHEN free_cashflow > 0 THEN 1 ELSE 0 END + 
+                CASE WHEN return_on_assets_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN free_cashflow / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
                 -- Leverage, Liquidity and Source of Funds 
-                CASE WHEN debt_to_equity_change < 1 THEN 1 ELSE 0 END + 
-                CASE WHEN current_ratio_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN outstanding_shares_change < 1 THEN 1 ELSE 0 END + 
+                CASE WHEN debt_to_equity_change <= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN current_ratio_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN outstanding_shares_change <= 1 THEN 1 ELSE 0 END + 
                 -- Operating Efficiency
-                CASE WHEN gross_profit_margin_change > 1 THEN 1 ELSE 0 END + 
-                CASE WHEN asset_turnover_change > 1 THEN 1 ELSE 0 END
+                CASE WHEN gross_profit_margin_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN asset_turnover_change >= 1 THEN 1 ELSE 0 END
             )
         ;
     '''

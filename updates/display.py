@@ -15,7 +15,6 @@ def update_companies_display(db):
             WITH cte AS (
                 SELECT
                     *,
-                    market_cap / forex_rate AS market_cap_USD,
                     ARRAY_AGG(time) OVER w time_arr,
                     ARRAY_AGG(outstanding_shares) OVER w outstanding_shares_arr,
                     ARRAY_AGG(total_revenue_ttm) OVER w total_revenue_arr,
@@ -255,7 +254,6 @@ def update_companies_display(db):
             current_ratio_arr,
             price_cash_flow_arr,
             ticker,
-            market_cap_USD,
             relative_score,
             relative_score_continuous,
             piotroski_score
@@ -454,7 +452,6 @@ def update_companies_display(db):
             cte2.current_ratio_arr,
             cte2.price_cash_flow_arr,
             cte2.ticker,
-            cte2.market_cap_USD,
             cte2.relative_score,
             cte2.relative_score_continuous,
             cte2.piotroski_score
@@ -655,7 +652,6 @@ def update_companies_display(db):
             current_ratio_arr = EXCLUDED.current_ratio_arr,
             price_cash_flow_arr = EXCLUDED.price_cash_flow_arr,
             ticker = EXCLUDED.ticker,
-            market_cap_USD = EXCLUDED.market_cap_USD,
             relative_score = EXCLUDED.relative_score,
             relative_score_continuous = EXCLUDED.relative_score_continuous,
             piotroski_score = EXCLUDED.piotroski_score
@@ -676,6 +672,12 @@ def update_companies_display(db):
             combined_score = relative_score_continuous / 8 * rsi_180 / 100
         FROM cte
         WHERE c.ticker = cte.ticker;
+        
+        UPDATE companies_display SET
+            esg = ticker IN (
+                SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
+            )
+        ;
     '''
 
     db.execute(sql)

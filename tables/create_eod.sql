@@ -7,6 +7,5 @@ CREATE TABLE eod (
 	close FLOAT8,
 	adjusted_close FLOAT8,
 	volume FLOAT8,
-	contained_in_s_and_p500 boolean,
 	PRIMARY KEY (ticker, time)
 ) PARTITION BY LIST (ticker);

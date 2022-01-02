@@ -26,8 +26,7 @@ def update_fama_french_FFs(db):
             - total_cashflows_from_investing_activities / total_assets AS investing,
             gross_profit / (total_assets - total_liabilities) AS profitability
         FROM companies_quarterly WHERE ticker in (
-            SELECT UNNEST(components) FROM indices 
-            WHERE ticker = 'RUA'
+            SELECT UNNEST(holdings) FROM etf WHERE ticker = 'VTI'
         )
         AND market_cap IS NOT NULL
         AND price_book IS NOT NULL
