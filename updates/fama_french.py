@@ -17,14 +17,14 @@ def update_fama_french_factors(db):
         SELECT
             ticker,
             DATE_TRUNC('quarter', time) AS quarter,
-            100 * (market_cap / LAG(market_cap, 4) OVER (
+            100 * (market_cap / NULLIF(LAG(market_cap, 4) OVER (
                 PARTITION BY ticker
                 ORDER BY time
-            ) - 1) AS return,
+            ), 0) - 1) AS return,
             market_cap,
             price_book,
-            - total_cashflows_from_investing_activities / total_assets AS investing,
-            gross_profit / (total_assets - total_liabilities) AS profitability
+            - total_cashflows_from_investing_activities / NULLIF(total_assets, 0) AS investing,
+            gross_profit / NULLIF(total_assets - total_liabilities, 0) AS profitability
         FROM companies_quarterly WHERE ticker in (
             SELECT UNNEST(holdings) FROM etf WHERE ticker = 'VTI'
         )
@@ -61,7 +61,7 @@ def update_fama_french_factors(db):
         SELECT
             m.quarter as time,
             risk_free_rate,
-            (average_price / (LAG(average_price, 4) OVER (ORDER BY m.quarter)) - 1) * 100 - risk_free_rate AS excess_market_return
+            (average_price / NULLIF(LAG(average_price, 4) OVER (ORDER BY m.quarter), 0) - 1) * 100 - risk_free_rate AS excess_market_return
         FROM risk_free r
         INNER JOIN market m
         ON r.quarter = m.quarter
@@ -136,7 +136,7 @@ def calculate_fama_french_regressions(db, fama_french_df, ticker):
         )
         SELECT 
             quarter AS time,
-            (average_price / (LAG(average_price, 4) OVER (ORDER BY quarter)) - 1) * 100 AS return
+            (average_price / NULLIF(LAG(average_price, 4) OVER (ORDER BY quarter), 0) - 1) * 100 AS return
         FROM cte
         ;
     '''
