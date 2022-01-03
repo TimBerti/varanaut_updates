@@ -25,17 +25,17 @@ def update_scores(db):
             ),
             relative_score_continuous = (
                 -- Valuation
-                price_book_ranker + 
-                price_sales_ranker + 
+                CASE WHEN price_book_ranker IS NOT NULL THEN price_book_ranker ELSE 0 END + 
+                CASE WHEN price_sales_ranker IS NOT NULL THEN price_sales_ranker ELSE 0 END + 
                 -- Profitability
-                asset_turnover_ranker + 
-                gross_profit_margin_ranker + 
+                CASE WHEN asset_turnover_ranker IS NOT NULL THEN asset_turnover_ranker ELSE 0 END + 
+                CASE WHEN gross_profit_margin_ranker IS NOT NULL THEN gross_profit_margin_ranker ELSE 0 END + 
                 -- Growth
-                revenue_growth_1y_ranker + 
-                revenue_growth_3y_ranker + 
+                CASE WHEN revenue_growth_1y_ranker IS NOT NULL THEN revenue_growth_1y_ranker ELSE 0 END + 
+                CASE WHEN revenue_growth_3y_ranker IS NOT NULL THEN revenue_growth_3y_ranker ELSE 0 END + 
                 -- Debt
-                debt_to_equity_ranker + 
-                current_ratio_ranker 
+                CASE WHEN debt_to_equity_ranker IS NOT NULL THEN debt_to_equity_ranker ELSE 0 END + 
+                CASE WHEN current_ratio_ranker IS NOT NULL THEN current_ratio_ranker ELSE 0 END 
             ),
             piotroski_score = (
                 -- Profitability
@@ -69,17 +69,17 @@ def update_scores(db):
             ),
             relative_score_continuous = (
                 -- Valuation
-                price_book_ranker + 
-                price_sales_ranker + 
+                CASE WHEN price_book_ranker IS NOT NULL THEN price_book_ranker ELSE 0 END + 
+                CASE WHEN price_sales_ranker IS NOT NULL THEN price_sales_ranker ELSE 0 END + 
                 -- Profitability
-                asset_turnover_ranker + 
-                gross_profit_margin_ranker + 
+                CASE WHEN asset_turnover_ranker IS NOT NULL THEN asset_turnover_ranker ELSE 0 END + 
+                CASE WHEN gross_profit_margin_ranker IS NOT NULL THEN gross_profit_margin_ranker ELSE 0 END + 
                 -- Growth
-                revenue_growth_1y_ranker + 
-                revenue_growth_3y_ranker + 
+                CASE WHEN revenue_growth_1y_ranker IS NOT NULL THEN revenue_growth_1y_ranker ELSE 0 END + 
+                CASE WHEN revenue_growth_3y_ranker IS NOT NULL THEN revenue_growth_3y_ranker ELSE 0 END + 
                 -- Debt
-                debt_to_equity_ranker + 
-                current_ratio_ranker 
+                CASE WHEN debt_to_equity_ranker IS NOT NULL THEN debt_to_equity_ranker ELSE 0 END + 
+                CASE WHEN current_ratio_ranker IS NOT NULL THEN current_ratio_ranker ELSE 0 END 
             ),
             piotroski_score = (
                 -- Profitability
