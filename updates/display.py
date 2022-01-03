@@ -673,7 +673,8 @@ def update_companies_display(db):
             esg = c.ticker IN (
                 SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
             ),
-            market_cap_usd = c.market_cap
+            market_cap = CASE WHEN c.stock_price * c.outstanding_shares < 4000000000000 THEN c.stock_price * c.outstanding_shares ELSE NULL END,
+            market_cap_usd = CASE WHEN c.stock_price * c.outstanding_shares < 4000000000000 THEN c.stock_price * c.outstanding_shares ELSE NULL END
         FROM cte
         WHERE c.ticker = cte.ticker;
     '''

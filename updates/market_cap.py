@@ -16,7 +16,7 @@ def update_market_cap(db):
             SELECT FIRST_VALUE(adjusted_close) OVER (
                 ORDER BY time DESC
             ) INTO price_at_report FROM eod 
-            WHERE ticker = $1 AND time <= $2
+            WHERE ticker = $1 AND time BETWEEN $2 - INTERVAL '7 days' AND $2
             LIMIT 1;
             RETURN price_at_report;
         END;
