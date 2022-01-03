@@ -1542,6 +1542,7 @@ def update_fundamentals(db, tickers, API_URL, API_TOKEN):
                         try:
                             update_annual(db, ticker, fundamentals)
                             update_quarterly(db, ticker, fundamentals)
+                            update_display(db, ticker, fundamentals)
                         except Exception as e:
                             print(f'Error at {ticker}: {str(e)[:1000]}')
 
