@@ -673,7 +673,7 @@ def update_companies_display(db):
             esg = c.ticker IN (
                 SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
             ),
-            market_cap_USD = c.market_cap
+            market_cap_usd = c.market_cap
         FROM cte
         WHERE c.ticker = cte.ticker;
     '''

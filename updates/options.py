@@ -101,7 +101,7 @@ def update_options(db, tickers, API_URL, API_TOKEN):
 
                 # update companies_display
 
-                values = {'implied_volatility': df['implied_volatility'].iloc[-1],
+                values = {'implied_volatility': float(df['implied_volatility'].iloc[-1]),
                           'ticker': ticker}
 
                 sql += f'''
