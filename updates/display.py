@@ -789,7 +789,7 @@ def update_companies_display(db):
             )
             SELECT
                 w.ticker,
-                w.avg_volume / NULLIF(a.avg_volume, 0) AS volume_deviation
+                (w.avg_volume / NULLIF(a.avg_volume, 0) - 1) * 100 AS volume_deviation
             FROM weekly w
             JOIN annual a
             ON w.ticker = a.ticker
