@@ -21,6 +21,7 @@ def calculate_ttm(db):
                 SUM(dividends_paid) OVER w dividends_paid_ttm,
                 SUM(gross_profit) OVER w gross_profit_ttm,
                 SUM(total_cash_from_operating_activities) OVER w total_cash_from_operating_activities_ttm,
+                SUM(total_cashflows_from_investing_activities) OVER w total_cashflows_from_investing_activities_ttm,
                 SUM(ebit) OVER w ebit_ttm
             FROM companies_quarterly
             WINDOW w AS (
@@ -37,6 +38,7 @@ def calculate_ttm(db):
             dividends_paid_ttm = ttm_table.dividends_paid_ttm,
             gross_profit_ttm = ttm_table.gross_profit_ttm,
             total_cash_from_operating_activities_ttm = ttm_table.total_cash_from_operating_activities_ttm,
+            total_cashflows_from_investing_activities_ttm = ttm_table.total_cashflows_from_investing_activities_ttm,
             ebit_ttm = ttm_table.ebit_ttm
         FROM ttm_table
         WHERE 
@@ -66,12 +68,12 @@ def calculate_metrics(db):
     sql = '''
         UPDATE companies_quarterly
         SET
-            price_earnings = (CASE WHEN net_income > 0 THEN market_cap ELSE NULL END) / NULLIF(net_income, 0),
-            price_sales = market_cap / NULLIF(total_revenue, 0),
-            price_cash_flow = (CASE WHEN free_cashflow > 0 THEN market_cap ELSE NULL END) / NULLIF(free_cashflow, 0),
+            price_earnings = (CASE WHEN net_income_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(net_income_ttm, 0),
+            price_sales = market_cap / NULLIF(total_revenue_ttm, 0),
+            price_cash_flow = (CASE WHEN free_cashflow_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(free_cashflow, 0),
             price_book = (CASE WHEN total_assets - total_liabilities > 0 THEN market_cap ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
-            dividend_yield = 100 * ABS(dividends_paid) / NULLIF(market_cap, 0),
-            payout_ratio = 100 * ABS(dividends_paid) / NULLIF(net_income, 0),
+            dividend_yield = 100 * ABS(dividends_paid_ttm) / NULLIF(market_cap, 0),
+            payout_ratio = 100 * ABS(dividends_paid_ttm) / NULLIF(net_income_ttm, 0),
             gross_profit_margin = 100 * gross_profit_ttm / NULLIF(total_revenue_ttm, 0),
             net_profit_margin = 100 * net_income_ttm / NULLIF(total_revenue_ttm, 0),
             operating_cash_flow_margin = 100 * total_cash_from_operating_activities_ttm / NULLIF(total_revenue_ttm, 0),

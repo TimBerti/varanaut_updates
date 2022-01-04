@@ -23,17 +23,17 @@ def update_fama_french_factors(db):
             ), 0) - 1) AS return,
             market_cap,
             price_book,
-            - total_cashflows_from_investing_activities / NULLIF(total_assets, 0) AS investing,
-            gross_profit / NULLIF(total_assets - total_liabilities, 0) AS profitability
+            - total_cashflows_from_investing_activities_ttm / NULLIF(total_assets, 0) AS investing,
+            gross_profit_ttm / NULLIF(total_assets - total_liabilities, 0) AS profitability
         FROM companies_quarterly WHERE ticker in (
             SELECT UNNEST(holdings) FROM etf WHERE ticker = 'VTI'
         )
         AND market_cap IS NOT NULL
         AND price_book IS NOT NULL
-        AND total_cashflows_from_investing_activities IS NOT NULL
+        AND total_cashflows_from_investing_activities_ttm IS NOT NULL
         AND total_assets IS NOT NULL
         AND total_liabilities IS NOT NULL
-        AND gross_profit IS NOT NULL
+        AND gross_profit_ttm IS NOT NULL
         AND total_assets > total_liabilities
         AND time > CURRENT_DATE - INTERVAl '10 years'
         ORDER BY time DESC
@@ -143,7 +143,7 @@ def calculate_fama_french_regressions(db, fama_french_df, ticker):
 
     stock_df = pd.read_sql(sql, con=db.get_bind())
 
-    stock_df = stock_df.merge(fama_french_df, on='time')
+    stock_df = stock_df.merge(fama_french_df, on='time').dropna()
 
     A = stock_df[['SMB', 'HML', 'CMA', 'RMW',
                   'excess_market_return']].to_numpy()
@@ -151,7 +151,7 @@ def calculate_fama_french_regressions(db, fama_french_df, ticker):
 
     x, *_ = np.linalg.lstsq(A[:-1], y[:-1], rcond=None)
 
-    return (np.dot(A[-1], x) - y[-1], *x)
+    return x
 
 
 def update_fama_french_regressions(db):
@@ -179,50 +179,26 @@ def update_fama_french_regressions(db):
 
         try:
 
-            expected_return, SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = calculate_fama_french_regressions(
+            SMB_factor, HML_factor, CMA_factor, RMW_factor, excess_market_return_factor = calculate_fama_french_regressions(
                 db, fama_french_df, ticker)
 
-            if not np.isnan(expected_return):
+            sql = f'''
+                UPDATE companies_display
+                SET 
+                    SMB_factor = :SMB_factor,
+                    HML_factor = :HML_factor,
+                    CMA_factor = :CMA_factor,
+                    RMW_factor = :RMW_factor,
+                    excess_market_return_factor = :excess_market_return_factor
+                WHERE ticker = :ticker
+                ;
+            '''
 
-                sql = f'''
-                    UPDATE companies_display
-                    SET 
-                        fama_french_expectation = {expected_return},
-                        SMB_factor = {SMB_factor},
-                        HML_factor = {HML_factor},
-                        CMA_factor = {CMA_factor},
-                        RMW_factor = {RMW_factor},
-                        excess_market_return_factor = {excess_market_return_factor}
-                    WHERE ticker = '{ticker}'
-                    ;
-                '''
-
-                db.execute(sql)
-                db.commit()
+            db.execute(sql, {'ticker': ticker, 'SMB_factor': SMB_factor, 'HML_factor': HML_factor, 'CMA_factor': CMA_factor,
+                       'RMW_factor': RMW_factor, 'excess_market_return_factor': excess_market_return_factor})
+            db.commit()
 
         except:
             continue
-
-    sql = '''
-        WITH cte AS (
-            SELECT 
-                ticker, 
-                fama_french_expectation,
-                PERCENT_RANK() OVER (
-                    PARTITION BY fama_french_expectation IS NOT NULL
-                    ORDER BY fama_french_expectation
-                ) AS fama_french_expectation_ranker
-            FROM companies_display
-        )
-
-        UPDATE companies_display c
-        SET fama_french_expectation_ranker = cte.fama_french_expectation_ranker
-        FROM cte
-        WHERE cte.ticker = c.ticker
-        ;
-    '''
-
-    db.execute(sql)
-    db.commit()
 
     print('Finished fama and french regressions update.')

@@ -127,6 +127,7 @@ CREATE TABLE companies_quarterly (
     dividends_paid_ttm double precision,
     gross_profit_ttm double precision,
     total_cash_from_operating_activities_ttm double precision,
+    total_cashflows_from_investing_activities_ttm double precision,
     ebit_ttm double precision,
     research_development_ttm double precision,
     market_cap double precision,

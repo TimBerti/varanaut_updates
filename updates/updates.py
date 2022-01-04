@@ -48,7 +48,6 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_fama_french_factors(db)
     update_fama_french_regressions(db)
     update_clusters(db)
-    # update_cluster_correlation(db)
     update_statistics(db)
 
     end = time()

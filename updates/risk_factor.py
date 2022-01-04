@@ -115,8 +115,12 @@ def update_risk_factors(db):
 
             coefs = R2 * np.abs(reg.coef_) / np.abs(reg.coef_).sum()
 
-            risk_exposure = {'intrinsic': 1 - R2, 'equity': coefs[0], 'interest_rate': coefs[1],
-                             'credit': coefs[2], 'commodities': coefs[3], 'inflation': coefs[4]}
+            risk_exposure = {'intrinsic': 1 - R2 if not np.isnan(1 - R2) else None,
+                             'equity': coefs[0] if not np.isnan(coefs[0]) else None,
+                             'interest_rate': coefs[1] if not np.isnan(coefs[1]) else None,
+                             'credit': coefs[2] if not np.isnan(coefs[2]) else None,
+                             'commodities': coefs[3] if not np.isnan(coefs[3]) else None,
+                             'inflation': coefs[4] if not np.isnan(coefs[4]) else None}
 
             sql = f'''
                 UPDATE companies_display 
