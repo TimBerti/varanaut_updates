@@ -255,5 +255,13 @@ CREATE TABLE companies_display (
     annual_return double precision,
     two_year_return double precision,
     three_year_return double precision,
+    price_earnings_average_10y double precision,
+    price_earnings_deviation_10y double precision,
+    price_book_average_10y double precision,
+    price_book_deviation_10y double precision,
+    price_sales_average_10y double precision,
+    price_sales_deviation_10y double precision,
+    price_cash_flow_average_10y double precision,
+    price_cash_flow_deviation_10y double precision,
     PRIMARY KEY (ticker)
 )

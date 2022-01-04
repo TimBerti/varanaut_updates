@@ -677,6 +677,31 @@ def update_companies_display(db):
             market_cap_usd = CASE WHEN c.stock_price * c.outstanding_shares < 4000000000000 THEN c.stock_price * c.outstanding_shares ELSE NULL END
         FROM cte
         WHERE c.ticker = cte.ticker;
+        
+        WITH cte AS (
+            SELECT 
+                ticker,
+                AVG(price_earnings) AS price_earnings_average,
+                AVG(price_book) AS price_book_average,
+                AVG(price_sales) AS price_sales_average,
+                AVG(price_cash_flow) AS price_cash_flow_average
+            FROM companies_quarterly
+            WHERE time >= CURRENT_DATE - INTERVAL '10 years'
+            GROUP BY ticker
+        )
+        UPDATE companies_display c
+        SET 
+            price_earnings_average_10y = cte.price_earnings_average,
+            price_earnings_deviation_10y = (c.price_earnings / NULLIF(cte.price_earnings_average, 0) - 1) * 100,
+            price_book_average_10y = cte.price_book_average,
+            price_book_deviation_10y = (c.price_book / NULLIF(cte.price_book_average, 0) - 1) * 100,
+            price_sales_average_10y = cte.price_sales_average,
+            price_sales_deviation_10y = (c.price_sales / NULLIF(cte.price_sales_average, 0) - 1) * 100,
+            price_cash_flow_average_10y = cte.price_cash_flow_average,
+            price_cash_flow_deviation_10y = (c.price_cash_flow / NULLIF(cte.price_cash_flow_average, 0) - 1) * 100
+        FROM cte
+        WHERE cte.ticker = c.ticker
+        ;
     '''
 
     db.execute(sql)
