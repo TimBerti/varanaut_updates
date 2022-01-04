@@ -11,6 +11,9 @@ def update_companies_display(db):
     start = time()
 
     sql = '''
+    
+        -- companies_quarterly -> companies_display 
+        
         WITH cte2 AS (
             WITH cte AS (
                 SELECT
@@ -656,28 +659,62 @@ def update_companies_display(db):
             relative_score_continuous = EXCLUDED.relative_score_continuous,
             piotroski_score = EXCLUDED.piotroski_score
         ;
-        
+        -- Market Cap & Misc
+
+        UPDATE companies_display
+        SET 
+            market_cap = CASE WHEN stock_price * outstanding_shares < 4000000000000 THEN stock_price * outstanding_shares ELSE NULL END,
+            market_cap_usd = CASE WHEN stock_price * outstanding_shares < 4000000000000 THEN stock_price * outstanding_shares ELSE NULL END,
+            esg = ticker IN (
+                SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
+            )
+        ;
+
+        -- Price Ratios
+
+        UPDATE companies_display
+        SET 
+            price_earnings = CASE WHEN net_income > 0 THEN market_cap / NULLIF(net_income, 0) ELSE NULL END,
+            price_sales = market_cap / NULLIF(total_revenue, 0),
+            price_book = CASE WHEN total_assets - total_liabilities > 0 THEN market_cap / NULLIF(total_assets - total_liabilities, 0) ELSE NULL END,
+            price_cash_flow = CASE WHEN free_cashflow > 0 THEN market_cap / NULLIF(free_cashflow, 0) ELSE NULL END
+        ;
+
+        -- Price Ratio Ranker
+
         WITH cte AS (
             SELECT
                 ticker,
                 PERCENT_RANK() OVER (
                     PARTITION BY (implied_volatility IS NOT NULL)
                     ORDER BY implied_volatility
-                ) AS implied_volatility_ranker
+                ) AS implied_volatility_ranker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (price_earnings IS NOT NULL)
+                    ORDER BY price_earnings DESC
+                ) AS price_earnings_ranker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (price_sales IS NOT NULL)
+                    ORDER BY price_sales DESC
+                ) AS price_sales_ranker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (price_book IS NOT NULL)
+                    ORDER BY price_book DESC
+                ) AS price_book_ranker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (price_cash_flow IS NOT NULL)
+                    ORDER BY price_cash_flow DESC
+                ) AS price_cash_flow_ranker
             FROM companies_display
         )
         UPDATE companies_display c
         SET 
-            implied_volatility_ranker = cte.implied_volatility_ranker,
-            combined_score = c.relative_score_continuous / 8 * rsi_180 / 100,
-            esg = c.ticker IN (
-                SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
-            ),
-            market_cap = CASE WHEN c.stock_price * c.outstanding_shares < 4000000000000 THEN c.stock_price * c.outstanding_shares ELSE NULL END,
-            market_cap_usd = CASE WHEN c.stock_price * c.outstanding_shares < 4000000000000 THEN c.stock_price * c.outstanding_shares ELSE NULL END
+            implied_volatility_ranker = cte.implied_volatility_ranker
         FROM cte
         WHERE c.ticker = cte.ticker;
-        
+
+        -- Price Ratio Average & Deviation
+
         WITH cte AS (
             SELECT 
                 ticker,
@@ -702,6 +739,54 @@ def update_companies_display(db):
         FROM cte
         WHERE cte.ticker = c.ticker
         ;
+
+        -- Scores
+
+        UPDATE companies_display
+        SET
+            relative_score = (
+                -- Valuation
+                CASE WHEN price_book_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                CASE WHEN price_sales_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                -- Profitability
+                CASE WHEN asset_turnover_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                CASE WHEN gross_profit_margin_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                -- Growth
+                CASE WHEN revenue_growth_1y_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                CASE WHEN revenue_growth_3y_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                -- Debt
+                CASE WHEN debt_to_equity_ranker > 2.0/3 THEN 1 ELSE 0 END + 
+                CASE WHEN current_ratio_ranker > 2.0/3 THEN 1 ELSE 0 END 
+            ),
+            relative_score_continuous = (
+                -- Valuation
+                CASE WHEN price_book_ranker IS NOT NULL THEN price_book_ranker ELSE 0 END + 
+                CASE WHEN price_sales_ranker IS NOT NULL THEN price_sales_ranker ELSE 0 END + 
+                -- Profitability
+                CASE WHEN asset_turnover_ranker IS NOT NULL THEN asset_turnover_ranker ELSE 0 END + 
+                CASE WHEN gross_profit_margin_ranker IS NOT NULL THEN gross_profit_margin_ranker ELSE 0 END + 
+                -- Growth
+                CASE WHEN revenue_growth_1y_ranker IS NOT NULL THEN revenue_growth_1y_ranker ELSE 0 END + 
+                CASE WHEN revenue_growth_3y_ranker IS NOT NULL THEN revenue_growth_3y_ranker ELSE 0 END + 
+                -- Debt
+                CASE WHEN debt_to_equity_ranker IS NOT NULL THEN debt_to_equity_ranker ELSE 0 END + 
+                CASE WHEN current_ratio_ranker IS NOT NULL THEN current_ratio_ranker ELSE 0 END 
+            ),
+            piotroski_score = (
+                -- Profitability
+                CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
+                CASE WHEN free_cashflow > 0 THEN 1 ELSE 0 END + 
+                CASE WHEN return_on_assets_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN free_cashflow / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
+                -- Leverage, Liquidity and Source of Funds 
+                CASE WHEN debt_to_equity_change <= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN current_ratio_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN outstanding_shares_change <= 1 THEN 1 ELSE 0 END + 
+                -- Operating Efficiency
+                CASE WHEN gross_profit_margin_change >= 1 THEN 1 ELSE 0 END + 
+                CASE WHEN asset_turnover_change >= 1 THEN 1 ELSE 0 END
+            ),
+            combined_score = relative_score_continuous / 8 * rsi_180 / 100
     '''
 
     db.execute(sql)
