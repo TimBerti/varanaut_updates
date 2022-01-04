@@ -263,5 +263,6 @@ CREATE TABLE companies_display (
     price_sales_deviation_10y double precision,
     price_cash_flow_average_10y double precision,
     price_cash_flow_deviation_10y double precision,
+    volume_deviation double precision,
     PRIMARY KEY (ticker)
 )

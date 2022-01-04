@@ -81,29 +81,21 @@ def update_companies_display(db):
             market_cap_change,
             market_cap_ranker,
             market_cap_ranker_change,
-            price_earnings,
             price_earnings_change,
-            price_earnings_ranker,
             price_earnings_ranker_change,
             price_earnings_growth,
             price_earnings_growth_change,
             price_earnings_growth_ranker,
             price_earnings_growth_ranker_change,
-            price_sales,
             price_sales_change,
-            price_sales_ranker,
             price_sales_ranker_change,
             price_sales_growth,
             price_sales_growth_change,
             price_sales_growth_ranker,
             price_sales_growth_ranker_change,
-            price_cash_flow,
             price_cash_flow_change,
-            price_cash_flow_ranker,
             price_cash_flow_ranker_change,
-            price_book,
             price_book_change,
-            price_book_ranker,
             price_book_ranker_change,
             dividend_yield,
             dividend_yield_change,
@@ -279,29 +271,21 @@ def update_companies_display(db):
             cte2.market_cap_change,
             cte2.market_cap_ranker,
             cte2.market_cap_ranker_change,
-            cte2.price_earnings,
             cte2.price_earnings_change,
-            cte2.price_earnings_ranker,
             cte2.price_earnings_ranker_change,
             cte2.price_earnings_growth,
             cte2.price_earnings_growth_change,
             cte2.price_earnings_growth_ranker,
             cte2.price_earnings_growth_ranker_change,
-            cte2.price_sales,
             cte2.price_sales_change,
-            cte2.price_sales_ranker,
             cte2.price_sales_ranker_change,
             cte2.price_sales_growth,
             cte2.price_sales_growth_change,
             cte2.price_sales_growth_ranker,
             cte2.price_sales_growth_ranker_change,
-            cte2.price_cash_flow,
             cte2.price_cash_flow_change,
-            cte2.price_cash_flow_ranker,
             cte2.price_cash_flow_ranker_change,
-            cte2.price_book,
             cte2.price_book_change,
-            cte2.price_book_ranker,
             cte2.price_book_ranker_change,
             cte2.dividend_yield,
             cte2.dividend_yield_change,
@@ -479,29 +463,21 @@ def update_companies_display(db):
             market_cap_change = EXCLUDED.market_cap_change,
             market_cap_ranker = EXCLUDED.market_cap_ranker,
             market_cap_ranker_change = EXCLUDED.market_cap_ranker_change,
-            price_earnings = EXCLUDED.price_earnings,
             price_earnings_change = EXCLUDED.price_earnings_change,
-            price_earnings_ranker = EXCLUDED.price_earnings_ranker,
             price_earnings_ranker_change = EXCLUDED.price_earnings_ranker_change,
             price_earnings_growth = EXCLUDED.price_earnings_growth,
             price_earnings_growth_change = EXCLUDED.price_earnings_growth_change,
             price_earnings_growth_ranker = EXCLUDED.price_earnings_growth_ranker,
             price_earnings_growth_ranker_change = EXCLUDED.price_earnings_growth_ranker_change,
-            price_sales = EXCLUDED.price_sales,
             price_sales_change = EXCLUDED.price_sales_change,
-            price_sales_ranker = EXCLUDED.price_sales_ranker,
             price_sales_ranker_change = EXCLUDED.price_sales_ranker_change,
             price_sales_growth = EXCLUDED.price_sales_growth,
             price_sales_growth_change = EXCLUDED.price_sales_growth_change,
             price_sales_growth_ranker = EXCLUDED.price_sales_growth_ranker,
             price_sales_growth_ranker_change = EXCLUDED.price_sales_growth_ranker_change,
-            price_cash_flow = EXCLUDED.price_cash_flow,
             price_cash_flow_change = EXCLUDED.price_cash_flow_change,
-            price_cash_flow_ranker = EXCLUDED.price_cash_flow_ranker,
             price_cash_flow_ranker_change = EXCLUDED.price_cash_flow_ranker_change,
-            price_book = EXCLUDED.price_book,
             price_book_change = EXCLUDED.price_book_change,
-            price_book_ranker = EXCLUDED.price_book_ranker,
             price_book_ranker_change = EXCLUDED.price_book_ranker_change,
             dividend_yield = EXCLUDED.dividend_yield,
             dividend_yield_change = EXCLUDED.dividend_yield_change,
@@ -787,6 +763,43 @@ def update_companies_display(db):
                 CASE WHEN asset_turnover_change >= 1 THEN 1 ELSE 0 END
             ),
             combined_score = relative_score_continuous / 8 * rsi_180 / 100
+        ;
+            
+        -- Volume deviation
+        
+        WITH cte AS (
+            WITH RECURSIVE
+            annual AS (
+                SELECT 
+                    ticker, 
+                    AVG(volume) AS avg_volume
+                FROM eod 
+                WHERE time > CURRENT_DATE - INTERVAL '1 year'
+                AND volume IS NOT NULL
+                GROUP BY ticker
+            ),
+            weekly AS (
+                SELECT 
+                    ticker, 
+                    AVG(volume) AS avg_volume
+                FROM eod 
+                WHERE time > CURRENT_DATE - INTERVAL '1 week'
+                AND volume IS NOT NULL
+                GROUP BY ticker
+            )
+            SELECT
+                w.ticker,
+                w.avg_volume / NULLIF(a.avg_volume, 0) AS volume_deviation
+            FROM weekly w
+            JOIN annual a
+            ON w.ticker = a.ticker
+        )
+        UPDATE companies_display c
+        SET
+            volume_deviation = cte.volume_deviation
+        FROM cte
+        WHERE c.ticker = cte.ticker
+        ;
     '''
 
     db.execute(sql)
