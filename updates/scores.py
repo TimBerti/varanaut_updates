@@ -42,7 +42,7 @@ def update_scores(db):
                 CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
                 CASE WHEN free_cashflow > 0 THEN 1 ELSE 0 END + 
                 CASE WHEN return_on_assets_change >= 1 THEN 1 ELSE 0 END + 
-                CASE WHEN free_cashflow / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
+                CASE WHEN free_cashflow / NULLIF(total_assets, 0) * 100 > return_on_assets THEN 1 ELSE 0 END +
                 -- Leverage, Liquidity and Source of Funds 
                 CASE WHEN debt_to_equity_change <= 1 THEN 1 ELSE 0 END + 
                 CASE WHEN current_ratio_change >= 1 THEN 1 ELSE 0 END + 
@@ -86,7 +86,7 @@ def update_scores(db):
                 CASE WHEN return_on_assets > 0 THEN 1 ELSE 0 END + 
                 CASE WHEN free_cashflow > 0 THEN 1 ELSE 0 END + 
                 CASE WHEN return_on_assets_change >= 1 THEN 1 ELSE 0 END + 
-                CASE WHEN free_cashflow / NULLIF(total_assets, 0) > return_on_assets THEN 1 ELSE 0 END +
+                CASE WHEN free_cashflow / NULLIF(total_assets, 0) * 100 > return_on_assets THEN 1 ELSE 0 END +
                 -- Leverage, Liquidity and Source of Funds 
                 CASE WHEN debt_to_equity_change <= 1 THEN 1 ELSE 0 END + 
                 CASE WHEN current_ratio_change >= 1 THEN 1 ELSE 0 END + 
