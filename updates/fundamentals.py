@@ -4,9 +4,6 @@ from tqdm import tqdm
 from datetime import datetime, timedelta
 
 
-# ToDo: update_display, update_quarterly
-
-
 def get_fundamentals(ticker, API_URL, API_TOKEN):
     '''
     Returns fundamental data of ticker.

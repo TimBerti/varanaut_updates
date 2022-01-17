@@ -264,5 +264,7 @@ CREATE TABLE companies_display (
     price_cash_flow_average_10y double precision,
     price_cash_flow_deviation_10y double precision,
     volume_deviation double precision,
+    annual_ebit_change_average double precision,
+    annual_ebit_change_std double precision,
     PRIMARY KEY (ticker)
 )
