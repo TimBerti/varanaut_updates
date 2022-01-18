@@ -9,7 +9,7 @@ from .inflation import update_cpi
 from .price_and_liquidity import update_price_and_liqudity
 from .etf import update_etfs
 from .market_cap import update_market_cap
-from .ebit import update_ebit
+from .free_cash_flow import update_free_cash_flow
 from .beta import update_beta
 from .rsi import update_rsi_180
 from .scores import update_scores
@@ -39,7 +39,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_cpi(db, NASDAQ_KEY)
     update_price_and_liqudity(db)
     update_market_cap(db)
-    update_ebit(db)
+    update_free_cash_flow(db)
     update_beta(db)
     update_rsi_180(db)
     update_quarterly_figures(db)

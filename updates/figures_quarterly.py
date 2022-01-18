@@ -79,11 +79,13 @@ def calculate_metrics(db):
             operating_cash_flow_margin = 100 * total_cash_from_operating_activities_ttm / NULLIF(total_revenue_ttm, 0),
             operating_margin = 100 * ebit_ttm / NULLIF(total_revenue_ttm, 0),
             return_on_assets = 100 * net_income_ttm / NULLIF(total_assets, 0),
+            return_on_net_tangible_assets = CASE WHEN net_income_ttm > 0 AND net_tangible_assets > 0  THEN 100 * net_income_ttm / NULLIF(net_tangible_assets, 0) ELSE NULL END,
             asset_turnover = 100 * total_revenue_ttm / NULLIF(total_assets, 0),
             cash_flow_on_assets = 100 * free_cashflow_ttm / NULLIF(total_assets, 0),
             return_on_equity = 100 * (CASE WHEN (total_assets - total_liabilities) > 0 THEN net_income_ttm ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
             revenue_on_equity = 100 * (CASE WHEN (total_assets - total_liabilities) > 0 THEN total_revenue_ttm ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
-            return_on_capital_employed = 100 * net_income_ttm / NULLIF(total_assets - total_current_liabilities, 0),
+            return_on_capital_employed = 100 * CASE WHEN net_income_ttm > 0 THEN net_income_ttm ELSE NULL END / NULLIF(total_assets - total_current_liabilities, 0),
+            return_on_capital = 100 * CASE WHEN net_income_ttm > 0  AND (total_assets - total_liabilities + short_long_term_debt_total) > 0 THEN net_income_ttm ELSE NULL END / NULLIF(total_assets - total_liabilities + short_long_term_debt_total, 0),
             debt_ratio = 100 * total_liabilities / NULLIF(total_assets, 0),
             debt_to_ebit = (CASE WHEN ebit_ttm > 0 THEN total_liabilities ELSE NULL END) / NULLIF(ebit_ttm, 0),
             debt_to_equity = (CASE WHEN (total_assets - total_liabilities) > 0 THEN total_liabilities ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
@@ -282,6 +284,10 @@ def calculate_rankings(db):
                     ORDER BY return_on_assets
                 ) return_on_assets_rel,
                 PERCENT_RANK() OVER(
+                    PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), return_on_net_tangible_assets IS NOT NULL)
+                    ORDER BY return_on_net_tangible_assets
+                ) return_on_net_tangible_assets_rel,
+                PERCENT_RANK() OVER(
                     PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), asset_turnover IS NOT NULL)
                     ORDER BY asset_turnover
                 ) asset_turnover_rel,
@@ -301,6 +307,10 @@ def calculate_rankings(db):
                     PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), return_on_capital_employed IS NOT NULL)
                     ORDER BY return_on_capital_employed
                 ) return_on_capital_employed_rel,
+                PERCENT_RANK() OVER(
+                    PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), return_on_capital IS NOT NULL)
+                    ORDER BY return_on_capital
+                ) return_on_capital_rel,
                 PERCENT_RANK() OVER(
                     PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), debt_ratio IS NOT NULL)
                     ORDER BY debt_ratio DESC
@@ -351,11 +361,13 @@ def calculate_rankings(db):
             operating_cash_flow_margin_ranker = CASE WHEN c.operating_cash_flow_margin IS NULL THEN NULL ELSE cte.operating_cash_flow_margin_rel END,
             operating_margin_ranker = CASE WHEN c.operating_margin IS NULL THEN NULL ELSE cte.operating_margin_rel END,
             return_on_assets_ranker = CASE WHEN c.return_on_assets IS NULL THEN NULL ELSE cte.return_on_assets_rel END,
+            return_on_net_tangible_assets_ranker = CASE WHEN c.return_on_net_tangible_assets IS NULL THEN NULL ELSE cte.return_on_net_tangible_assets_rel END,
             asset_turnover_ranker = CASE WHEN c.asset_turnover IS NULL THEN NULL ELSE cte.asset_turnover_rel END,
             cash_flow_on_assets_ranker = CASE WHEN c.cash_flow_on_assets IS NULL THEN NULL ELSE cte.cash_flow_on_assets_rel END,
             return_on_equity_ranker = CASE WHEN c.return_on_equity IS NULL THEN NULL ELSE cte.return_on_equity_rel END,
             revenue_on_equity_ranker = CASE WHEN c.revenue_on_equity IS NULL THEN NULL ELSE cte.revenue_on_equity_rel END,
             return_on_capital_employed_ranker = CASE WHEN c.return_on_capital_employed IS NULL THEN NULL ELSE cte.return_on_capital_employed_rel END,
+            return_on_capital_ranker = CASE WHEN c.return_on_capital IS NULL THEN NULL ELSE cte.return_on_capital_rel END,
             debt_ratio_ranker = CASE WHEN c.debt_ratio IS NULL THEN NULL ELSE cte.debt_ratio_rel END,
             debt_to_ebit_ranker = CASE WHEN c.debt_to_ebit IS NULL THEN NULL ELSE cte.debt_to_ebit_rel END,
             debt_to_equity_ranker = CASE WHEN c.debt_to_equity IS NULL THEN NULL ELSE cte.debt_to_equity_rel END,
@@ -442,6 +454,8 @@ def calculate_change(db):
                 LAG(operating_margin_ranker, 4) OVER w operating_margin_ranker_1,
                 LAG(return_on_assets, 4) OVER w return_on_assets_1,
                 LAG(return_on_assets_ranker, 4) OVER w return_on_assets_ranker_1,
+                LAG(return_on_net_tangible_assets, 4) OVER w return_on_net_tangible_assets_1,
+                LAG(return_on_net_tangible_assets_ranker, 4) OVER w return_on_net_tangible_assets_ranker_1,
                 LAG(asset_turnover, 4) OVER w asset_turnover_1,
                 LAG(asset_turnover_ranker, 4) OVER w asset_turnover_ranker_1,
                 LAG(cash_flow_on_assets, 4) OVER w cash_flow_on_assets_1,
@@ -452,6 +466,8 @@ def calculate_change(db):
                 LAG(revenue_on_equity_ranker, 4) OVER w revenue_on_equity_ranker_1,
                 LAG(return_on_capital_employed, 4) OVER w return_on_capital_employed_1,
                 LAG(return_on_capital_employed_ranker, 4) OVER w return_on_capital_employed_ranker_1,
+                LAG(return_on_capital, 4) OVER w return_on_capital_1,
+                LAG(return_on_capital_ranker, 4) OVER w return_on_capital_ranker_1,
                 LAG(debt_ratio, 4) OVER w debt_ratio_1,
                 LAG(debt_ratio_ranker, 4) OVER w debt_ratio_ranker_1,
                 LAG(debt_to_ebit, 4) OVER w debt_to_ebit_1,
@@ -523,6 +539,8 @@ def calculate_change(db):
             operating_margin_ranker_change = c.operating_margin_ranker / NULLIF(cte.operating_margin_ranker_1, 0),
             return_on_assets_change = c.return_on_assets / NULLIF(cte.return_on_assets_1, 0),
             return_on_assets_ranker_change = c.return_on_assets_ranker / NULLIF(cte.return_on_assets_ranker_1, 0),
+            return_on_net_tangible_assets_change = c.return_on_net_tangible_assets / NULLIF(cte.return_on_net_tangible_assets_1, 0),
+            return_on_net_tangible_assets_ranker_change = c.return_on_net_tangible_assets_ranker / NULLIF(cte.return_on_net_tangible_assets_ranker_1, 0),
             asset_turnover_change = c.asset_turnover / NULLIF(cte.asset_turnover_1, 0),
             asset_turnover_ranker_change = c.asset_turnover_ranker / NULLIF(cte.asset_turnover_ranker_1, 0),
             cash_flow_on_assets_change = c.cash_flow_on_assets / NULLIF(cte.cash_flow_on_assets_1, 0),
@@ -533,6 +551,8 @@ def calculate_change(db):
             revenue_on_equity_ranker_change = c.revenue_on_equity_ranker / NULLIF(cte.revenue_on_equity_ranker_1, 0),
             return_on_capital_employed_change = c.return_on_capital_employed / NULLIF(cte.return_on_capital_employed_1, 0),
             return_on_capital_employed_ranker_change = c.return_on_capital_employed_ranker / NULLIF(cte.return_on_capital_employed_ranker_1, 0),
+            return_on_capital_change = c.return_on_capital / NULLIF(cte.return_on_capital_1, 0),
+            return_on_capital_ranker_change = c.return_on_capital_ranker / NULLIF(cte.return_on_capital_ranker_1, 0),
             debt_ratio_change = c.debt_ratio / NULLIF(cte.debt_ratio_1, 0),
             debt_ratio_ranker_change = c.debt_ratio_ranker / NULLIF(cte.debt_ratio_ranker_1, 0),
             debt_to_ebit_change = c.debt_to_ebit / NULLIF(cte.debt_to_ebit_1, 0),

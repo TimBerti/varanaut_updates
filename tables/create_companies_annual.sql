@@ -269,5 +269,13 @@ CREATE TABLE companies_annual (
     piotroski_score double precision,
     outstanding_shares_change double precision,
     relative_score_continuous double precision,
+    return_on_capital double precision,
+    return_on_capital_change double precision,
+    return_on_capital_ranker double precision,
+    return_on_capital_ranker_change double precision,
+    return_on_net_tangible_assets double precision,
+    return_on_net_tangible_assets_change double precision,
+    return_on_net_tangible_assets_ranker double precision,
+    return_on_net_tangible_assets_ranker_change double precision,
     PRIMARY KEY (ticker, time)
 )
