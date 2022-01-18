@@ -70,7 +70,7 @@ def calculate_metrics(db):
         SET
             price_earnings = (CASE WHEN net_income_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(net_income_ttm, 0),
             price_sales = market_cap / NULLIF(total_revenue_ttm, 0),
-            price_cash_flow = (CASE WHEN free_cashflow_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(free_cashflow, 0),
+            price_cash_flow = (CASE WHEN free_cashflow_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(free_cashflow_ttm, 0),
             price_book = (CASE WHEN total_assets - total_liabilities > 0 THEN market_cap ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
             dividend_yield = 100 * ABS(dividends_paid_ttm) / NULLIF(market_cap, 0),
             payout_ratio = 100 * ABS(dividends_paid_ttm) / NULLIF(net_income_ttm, 0),
