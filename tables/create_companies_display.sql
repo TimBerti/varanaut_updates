@@ -22,6 +22,7 @@ CREATE TABLE companies_display (
     avg_rating_analyst FLOAT8,
     target_price_analyst FLOAT8,
     ratings_analyst jsonb,
+    officers jsonb,
     short_interest_ratio FLOAT8,
     short_ratio_float FLOAT8,
     short_ratio_outstanding FLOAT8,

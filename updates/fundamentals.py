@@ -156,6 +156,13 @@ def update_display(db, ticker, fundamentals):
 
     values[f'ratings_analyst'] = ratings_analyst
 
+    try:
+        officers = [{'name': x['Name'].replace("'", "''"), 'title': x['Title'].replace(
+            "'", "''")} for x in fundamentals['General']['Officers'].values()]
+        values['officers'] = json.dumps(officers)
+    except:
+        values['officers'] = None
+
     sql = f'''
         INSERT INTO companies_display (
             ticker
@@ -175,6 +182,7 @@ def update_display(db, ticker, fundamentals):
             avg_rating_analyst = {'NULL' if values['avg_rating_analyst'] is None else values['avg_rating_analyst']},
             target_price_analyst = {'NULL' if values['target_price_analyst'] is None else values['target_price_analyst']},
             ratings_analyst = {'NULL' if values['ratings_analyst'] is None else f"'{values['ratings_analyst']}'"},
+            officers = {'NULL' if values['officers'] is None else f"'{values['officers']}'"},
             short_interest_ratio = {'NULL' if values['short_interest_ratio'] is None else values['short_interest_ratio']},
             short_ratio_float = {'NULL' if values['short_ratio_float'] is None else values['short_ratio_float']},
             short_ratio_outstanding = {'NULL' if values['short_ratio_outstanding'] is None else values['short_ratio_outstanding']},
