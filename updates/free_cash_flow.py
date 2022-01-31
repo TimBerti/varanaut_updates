@@ -29,7 +29,7 @@ def update_free_cash_flow(db):
                         PARTITION BY ticker ORDER BY time
                     ), 0) AS free_cash_flow_change 
                 FROM companies_quarterly 
-                WHERE time <= CURRENT_DATE - INTERVAL '5 years'
+                WHERE time >= CURRENT_DATE - INTERVAL '5 years'
                 AND ticker IN (SELECT ticker FROM non_negative_free_cash_flows)
             )
             SELECT
