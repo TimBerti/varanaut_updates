@@ -69,6 +69,7 @@ def calculate_metrics(db):
         UPDATE companies_quarterly
         SET
             price_earnings = (CASE WHEN net_income_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(net_income_ttm, 0),
+            price_ebit = (CASE WHEN ebit_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(ebit_ttm, 0),
             price_sales = market_cap / NULLIF(total_revenue_ttm, 0),
             price_cash_flow = (CASE WHEN free_cashflow_ttm > 0 THEN market_cap ELSE NULL END) / NULLIF(free_cashflow_ttm, 0),
             price_book = (CASE WHEN total_assets - total_liabilities > 0 THEN market_cap ELSE NULL END) / NULLIF(total_assets - total_liabilities, 0),
@@ -187,6 +188,10 @@ def calculate_rankings(db):
                     PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), price_earnings IS NOT NULL)
                     ORDER BY price_earnings DESC
                 ) price_earnings_rel,
+                PERCENT_RANK() OVER(
+                    PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), price_ebit IS NOT NULL)
+                    ORDER BY price_ebit DESC
+                ) price_ebit_rel,
                 PERCENT_RANK() OVER(
                     PARTITION BY (sector, EXTRACT(QUARTER FROM time), EXTRACT(YEAR FROM time), price_earnings_growth IS NOT NULL)
                     ORDER BY price_earnings_growth DESC
@@ -337,6 +342,7 @@ def calculate_rankings(db):
         SET
             market_cap_ranker = CASE WHEN c.market_cap IS NULL THEN NULL ELSE cte.market_cap_rel END,
             price_earnings_ranker = CASE WHEN c.price_earnings IS NULL THEN NULL ELSE cte.price_earnings_rel END,
+            price_ebit_ranker = CASE WHEN c.price_ebit IS NULL THEN NULL ELSE cte.price_ebit_rel END,
             price_earnings_growth_ranker = CASE WHEN c.price_earnings_growth IS NULL THEN NULL ELSE cte.price_earnings_growth_rel END,
             price_sales_ranker = CASE WHEN c.price_sales IS NULL THEN NULL ELSE cte.price_sales_rel END,
             price_sales_growth_ranker = CASE WHEN c.price_sales_growth IS NULL THEN NULL ELSE cte.price_sales_growth_rel END,
@@ -406,6 +412,8 @@ def calculate_change(db):
                 LAG(market_cap_ranker, 4) OVER w market_cap_ranker_1,
                 LAG(price_earnings, 4) OVER w price_earnings_1,
                 LAG(price_earnings_ranker, 4) OVER w price_earnings_ranker_1,
+                LAG(price_ebit, 4) OVER w price_ebit_1,
+                LAG(price_ebit_ranker, 4) OVER w price_ebit_ranker_1,
                 LAG(price_earnings_growth, 4) OVER w price_earnings_growth_1,
                 LAG(price_earnings_growth_ranker, 4) OVER w price_earnings_growth_ranker_1,
                 LAG(price_sales, 4) OVER w price_sales_1,
@@ -491,6 +499,8 @@ def calculate_change(db):
             market_cap_ranker_change = c.market_cap_ranker / NULLIF(cte.market_cap_ranker_1, 0),
             price_earnings_change = c.price_earnings / NULLIF(cte.price_earnings_1, 0),
             price_earnings_ranker_change = c.price_earnings_ranker / NULLIF(cte.price_earnings_ranker_1, 0),
+            price_ebit_change = c.price_ebit / NULLIF(cte.price_ebit_1, 0),
+            price_ebit_ranker_change = c.price_ebit_ranker / NULLIF(cte.price_ebit_ranker_1, 0),
             price_earnings_growth_change = c.price_earnings_growth / NULLIF(cte.price_earnings_growth_1, 0),
             price_earnings_growth_ranker_change = c.price_earnings_growth_ranker / NULLIF(cte.price_earnings_growth_ranker_1, 0),
             price_sales_change = c.price_sales / NULLIF(cte.price_sales_1, 0),

@@ -277,5 +277,16 @@ CREATE TABLE companies_display (
     return_on_net_tangible_assets_ranker double precision,
     return_on_net_tangible_assets_ranker_change double precision,
     return_on_net_tangible_assets_arr double precision [],
+    annual_revenue_change_average double precision,
+    annual_revenue_change_std double precision,
+    price_ebit double precision,
+    price_ebit_ranker double precision,
+    price_ebit_change double precision,
+    price_ebit_ranker_change double precision,
+    price_ebit_arr double precision [],
+    price_ebit_average_10y double precision,
+    price_ebit_deviation_10y double precision,
+    operating_margin_mid double precision,
+    operating_margin_range double precision,
     PRIMARY KEY (ticker)
 )

@@ -277,5 +277,9 @@ CREATE TABLE companies_annual (
     return_on_net_tangible_assets_change double precision,
     return_on_net_tangible_assets_ranker double precision,
     return_on_net_tangible_assets_ranker_change double precision,
+    price_ebit double precision,
+    price_ebit_ranker double precision,
+    price_ebit_change double precision,
+    price_ebit_ranker_change double precision,
     PRIMARY KEY (ticker, time)
 )

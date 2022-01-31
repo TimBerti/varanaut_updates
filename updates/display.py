@@ -32,6 +32,7 @@ def update_companies_display(db):
                     ARRAY_AGG(total_current_assets) OVER w total_current_assets_arr,
                     ARRAY_AGG(research_development_ttm) OVER w research_development_arr,
                     ARRAY_AGG(price_earnings) OVER w price_earnings_arr,
+                    ARRAY_AGG(price_ebit) OVER w price_ebit_arr,
                     ARRAY_AGG(price_sales) OVER w price_sales_arr,
                     ARRAY_AGG(price_book) OVER w price_book_arr,
                     ARRAY_AGG(dividend_yield) OVER w dividend_yield_arr,
@@ -85,6 +86,8 @@ def update_companies_display(db):
             market_cap_ranker_change,
             price_earnings_change,
             price_earnings_ranker_change,
+            price_ebit_change,
+            price_ebit_ranker_change,
             price_earnings_growth,
             price_earnings_growth_change,
             price_earnings_growth_ranker,
@@ -238,6 +241,7 @@ def update_companies_display(db):
             total_current_assets_arr,
             research_development_arr,
             price_earnings_arr,
+            price_ebit_arr,
             price_sales_arr,
             price_book_arr,
             dividend_yield_arr,
@@ -285,6 +289,8 @@ def update_companies_display(db):
             cte2.market_cap_ranker_change,
             cte2.price_earnings_change,
             cte2.price_earnings_ranker_change,
+            cte2.price_ebit_change,
+            cte2.price_ebit_ranker_change,
             cte2.price_earnings_growth,
             cte2.price_earnings_growth_change,
             cte2.price_earnings_growth_ranker,
@@ -438,6 +444,7 @@ def update_companies_display(db):
             cte2.total_current_assets_arr,
             cte2.research_development_arr,
             cte2.price_earnings_arr,
+            cte2.price_ebit_arr,
             cte2.price_sales_arr,
             cte2.price_book_arr,
             cte2.dividend_yield_arr,
@@ -487,6 +494,8 @@ def update_companies_display(db):
             market_cap_ranker_change = EXCLUDED.market_cap_ranker_change,
             price_earnings_change = EXCLUDED.price_earnings_change,
             price_earnings_ranker_change = EXCLUDED.price_earnings_ranker_change,
+            price_ebit_change = EXCLUDED.price_ebit_change,
+            price_ebit_ranker_change = EXCLUDED.price_ebit_ranker_change,
             price_earnings_growth = EXCLUDED.price_earnings_growth,
             price_earnings_growth_change = EXCLUDED.price_earnings_growth_change,
             price_earnings_growth_ranker = EXCLUDED.price_earnings_growth_ranker,
@@ -640,6 +649,7 @@ def update_companies_display(db):
             total_current_assets_arr = EXCLUDED.total_current_assets_arr,
             research_development_arr = EXCLUDED.research_development_arr,
             price_earnings_arr = EXCLUDED.price_earnings_arr,
+            price_ebit_arr = EXCLUDED.price_ebit_arr,
             price_sales_arr = EXCLUDED.price_sales_arr,
             price_book_arr = EXCLUDED.price_book_arr,
             dividend_yield_arr = EXCLUDED.dividend_yield_arr,
@@ -683,6 +693,7 @@ def update_companies_display(db):
         UPDATE companies_display
         SET 
             price_earnings = CASE WHEN net_income > 0 THEN market_cap / NULLIF(net_income, 0) ELSE NULL END,
+            price_ebit = CASE WHEN ebit > 0 THEN market_cap / NULLIF(ebit, 0) ELSE NULL END,
             price_sales = market_cap / NULLIF(total_revenue, 0),
             price_book = CASE WHEN total_assets - total_liabilities > 0 THEN market_cap / NULLIF(total_assets - total_liabilities, 0) ELSE NULL END,
             price_cash_flow = CASE WHEN free_cashflow > 0 THEN market_cap / NULLIF(free_cashflow, 0) ELSE NULL END
@@ -702,6 +713,10 @@ def update_companies_display(db):
                     ORDER BY price_earnings DESC
                 ) AS price_earnings_ranker,
                 PERCENT_RANK() OVER (
+                    PARTITION BY (price_ebit IS NOT NULL)
+                    ORDER BY price_ebit DESC
+                ) AS price_ebit_ranker,
+                PERCENT_RANK() OVER (
                     PARTITION BY (price_sales IS NOT NULL)
                     ORDER BY price_sales DESC
                 ) AS price_sales_ranker,
@@ -717,7 +732,12 @@ def update_companies_display(db):
         )
         UPDATE companies_display c
         SET 
-            implied_volatility_ranker = cte.implied_volatility_ranker
+            implied_volatility_ranker = cte.implied_volatility_ranker,
+            price_earnings_ranker = cte.price_earnings_ranker,
+            price_ebit_ranker = cte.price_ebit_ranker,
+            price_sales_ranker = cte.price_sales_ranker,
+            price_book_ranker = cte.price_book_ranker,
+            price_cash_flow_ranker = cte.price_cash_flow_ranker
         FROM cte
         WHERE c.ticker = cte.ticker;
 
@@ -727,6 +747,7 @@ def update_companies_display(db):
             SELECT 
                 ticker,
                 AVG(price_earnings) AS price_earnings_average,
+                AVG(price_ebit) AS price_ebit_average,
                 AVG(price_book) AS price_book_average,
                 AVG(price_sales) AS price_sales_average,
                 AVG(price_cash_flow) AS price_cash_flow_average
@@ -738,6 +759,8 @@ def update_companies_display(db):
         SET 
             price_earnings_average_10y = cte.price_earnings_average,
             price_earnings_deviation_10y = (c.price_earnings / NULLIF(cte.price_earnings_average, 0) - 1) * 100,
+            price_ebit_average_10y = cte.price_ebit_average,
+            price_ebit_deviation_10y = (c.price_ebit / NULLIF(cte.price_ebit_average, 0) - 1) * 100,
             price_book_average_10y = cte.price_book_average,
             price_book_deviation_10y = (c.price_book / NULLIF(cte.price_book_average, 0) - 1) * 100,
             price_sales_average_10y = cte.price_sales_average,
