@@ -679,13 +679,29 @@ def update_companies_display(db):
         ;
         -- Market Cap & Misc
 
-        UPDATE companies_display
+        WITH cte AS (
+            WITH cte2 AS (
+                SELECT
+                    ticker,
+                    outstanding_shares
+                FROM companies_quarterly
+                WHERE outstanding_shares IS NOT NULL
+                AND time > CURRENT_DATE - INTERVAL '1 year'
+                ORDER BY time DESC
+            )
+            SELECT DISTINCT ON (ticker)
+            *
+            FROM cte2
+        )
+        UPDATE companies_display c
         SET 
-            market_cap = CASE WHEN stock_price * outstanding_shares < 4000000000000 THEN stock_price * outstanding_shares ELSE NULL END,
-            market_cap_usd = CASE WHEN stock_price * outstanding_shares < 4000000000000 THEN stock_price * outstanding_shares ELSE NULL END,
-            esg = ticker IN (
+            market_cap = CASE WHEN stock_price * cte.outstanding_shares < 4000000000000 THEN stock_price * cte.outstanding_shares ELSE NULL END,
+            market_cap_usd = CASE WHEN stock_price * cte.outstanding_shares < 4000000000000 THEN stock_price * cte.outstanding_shares ELSE NULL END,
+            esg = c.ticker IN (
                 SELECT UNNEST(holdings) FROM etf WHERE ticker = 'ESGV'
             )
+        FROM cte
+        WHERE c.ticker = cte.ticker
         ;
 
         -- Price Ratios
