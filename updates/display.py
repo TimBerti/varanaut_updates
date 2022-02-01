@@ -695,6 +695,7 @@ def update_companies_display(db):
         )
         UPDATE companies_display c
         SET 
+            outstanding_shares = cte.outstanding_shares,
             market_cap = CASE WHEN stock_price * cte.outstanding_shares < 4000000000000 THEN stock_price * cte.outstanding_shares ELSE NULL END,
             market_cap_usd = CASE WHEN stock_price * cte.outstanding_shares < 4000000000000 THEN stock_price * cte.outstanding_shares ELSE NULL END,
             esg = c.ticker IN (
