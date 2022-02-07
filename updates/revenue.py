@@ -16,7 +16,7 @@ def update_revenue(db):
                         PARTITION BY ticker ORDER BY time
                     ), 0) AS revenue_change 
                 FROM companies_quarterly 
-                WHERE time >= CURRENT_DATE - INTERVAL '5 years'
+                WHERE time >= CURRENT_DATE - INTERVAL '6 years'
             )
             SELECT
                 ticker,
