@@ -27,7 +27,7 @@ def calculate_ttm(db):
             WINDOW w AS (
                 PARTITION BY ticker
                 ORDER BY time
-                RANGE BETWEEN INTERVAL '365 days' PRECEDING AND CURRENT ROW
+                RANGE BETWEEN INTERVAL '10 months' PRECEDING AND CURRENT ROW
             )
         )
         UPDATE companies_quarterly c
