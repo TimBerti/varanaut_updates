@@ -309,5 +309,6 @@ CREATE TABLE companies_display (
     ev_ebitda_arr double precision [],
     interest_expense double precision,
     wacc double precision,
+    dividend_consistency double precision,
     PRIMARY KEY (ticker)
 )

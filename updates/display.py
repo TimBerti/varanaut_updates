@@ -301,7 +301,7 @@ def update_companies_display(db):
             cte2.total_current_assets,
             cte2.short_long_term_debt_total,
             cte2.cash,
-            cte2.interest_expense,
+            cte2.interest_expense_ttm,
             cte2.ev,
             cte2.market_cap,
             cte2.market_cap_change,
@@ -864,8 +864,8 @@ def update_companies_display(db):
         $risk_free_rate$ LANGUAGE plpgsql;
 
         UPDATE companies_display SET 
-            wacc = (risk_free_rate() + beta * (8 - risk_free_rate())) * market_cap / NULLIF(market_cap + CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END, 0)
-            + ABS(CASE WHEN interest_expense IS NULL THEN 0 ELSE interest_expense END) / NULLIF(market_cap + CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END, 0) * 100
+            wacc = (risk_free_rate() + beta * (8 - risk_free_rate())) * market_cap / NULLIF(market_cap + ABS(CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END), 0)
+            + ABS(CASE WHEN interest_expense IS NULL THEN 0 ELSE interest_expense END) / NULLIF(market_cap + ABS(CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END), 0) * 100
         ;
 
         -- Scores
@@ -952,6 +952,29 @@ def update_companies_display(db):
         FROM cte
         WHERE c.ticker = cte.ticker
         ;
+        
+        WITH cte AS (
+            SELECT
+                ticker,
+                SUM(CASE WHEN ABS(dividends_paid_ttm) > 0 THEN 1 ELSE 0 END) AS number_of_dividends,
+                regr_r2(ABS(dividends_paid_ttm), x) AS dividend_r2,
+                regr_slope(ABS(dividends_paid_ttm), x) AS dividend_slope
+            FROM (
+                SELECT
+                    ticker,
+                    dividends_paid_ttm,
+                    SUM(1) OVER (PARTITION BY ticker ORDER BY time) AS x
+                FROM companies_quarterly
+                WHERE time > CURRENT_DATE - INTERVAL '7 years'
+            ) AS tmp
+            GROUP BY ticker
+        )
+        UPDATE companies_display c 
+        SET
+            dividend_consistency = CASE WHEN number_of_dividends >= 20 AND dividend_slope > 0 THEN dividend_r2 ELSE NULL END
+        FROM cte
+        WHERE cte.ticker = c.ticker;
+
     '''
 
     db.execute(sql)
