@@ -290,5 +290,15 @@ CREATE TABLE companies_quarterly (
     price_ebit_change double precision,
     price_ebit_ranker_change double precision,
     piotroski_score double precision,
+    ebitda_ttm double precision,
+    ev double precision,
+    ev_ebit double precision,
+    ev_ebitda double precision,
+    ev_ebit_ranker double precision,
+    ev_ebitda_ranker double precision,
+    ev_ebit_change double precision,
+    ev_ebitda_change double precision,
+    ev_ebit_ranker_change double precision,
+    ev_ebitda_ranker_change double precision,
     PRIMARY KEY (ticker, time)
 )
