@@ -86,6 +86,7 @@ def update_companies_display(db):
             total_current_assets,
             short_long_term_debt_total,
             cash,
+            interest_expense,
             ev,
             market_cap,
             market_cap_change,
@@ -300,6 +301,7 @@ def update_companies_display(db):
             cte2.total_current_assets,
             cte2.short_long_term_debt_total,
             cte2.cash,
+            cte2.interest_expense,
             cte2.ev,
             cte2.market_cap,
             cte2.market_cap_change,
@@ -516,6 +518,7 @@ def update_companies_display(db):
             total_current_assets = EXCLUDED.total_current_assets,
             short_long_term_debt_total = EXCLUDED.short_long_term_debt_total,
             cash = EXCLUDED.cash,
+            interest_expense = EXCLUDED.interest_expense,
             ev = EXCLUDED.ev,
             market_cap = EXCLUDED.market_cap,
             market_cap_change = EXCLUDED.market_cap_change,
@@ -845,6 +848,24 @@ def update_companies_display(db):
             price_cash_flow_deviation_10y = (c.price_cash_flow / NULLIF(cte.price_cash_flow_average, 0) - 1) * 100
         FROM cte
         WHERE cte.ticker = c.ticker
+        ;
+        
+        -- WACC
+        
+        CREATE OR REPLACE FUNCTION risk_free_rate ()
+        RETURNS float8 AS $risk_free_rate$
+        DECLARE
+            risk_free_rate float8;
+        BEGIN
+            SELECT adjusted_close INTO risk_free_rate
+            FROM eod WHERE ticker = 'US10Y.GBOND' ORDER BY time DESC LIMIT 1;
+            RETURN risk_free_rate;
+        END;
+        $risk_free_rate$ LANGUAGE plpgsql;
+
+        UPDATE companies_display SET 
+            wacc = (risk_free_rate() + beta * (8 - risk_free_rate())) * market_cap / NULLIF(market_cap + CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END, 0)
+            + ABS(CASE WHEN interest_expense IS NULL THEN 0 ELSE interest_expense END) / NULLIF(market_cap + CASE WHEN short_long_term_debt_total IS NULL THEN 0 ELSE short_long_term_debt_total END, 0) * 100
         ;
 
         -- Scores
