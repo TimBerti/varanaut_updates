@@ -314,5 +314,8 @@ CREATE TABLE companies_display (
     retained_earnings double precision,
     altman_z_score double precision,
     beneish_m_score double precision,
+    balance_sheet jsonb,
+    cash_flow_statement jsonb,
+    income_statement jsonb,
     PRIMARY KEY (ticker)
 )

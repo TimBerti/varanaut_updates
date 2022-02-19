@@ -163,6 +163,17 @@ def update_display(db, ticker, fundamentals):
     except:
         values['officers'] = None
 
+    try:
+        balance_sheet = json.dumps(fundamentals['Financials']['Balance_Sheet'])
+        cash_flow_statement = json.dumps(
+            fundamentals['Financials']['Cash_Flow'])
+        income_statement = json.dumps(
+            fundamentals['Financials']['Income_Statement'])
+    except:
+        balance_sheet = None
+        cash_flow_statement = None
+        income_statement = None
+
     sql = f'''
         INSERT INTO companies_display (
             ticker
@@ -172,6 +183,9 @@ def update_display(db, ticker, fundamentals):
 
         UPDATE companies_display
         SET
+            balance_sheet = {'NULL' if balance_sheet is None else f"'{balance_sheet}'"},
+            cash_flow_statement = {'NULL' if cash_flow_statement is None else f"'{cash_flow_statement}'"},
+            income_statement = {'NULL' if income_statement is None else f"'{income_statement}'"},
             currency = {'NULL' if values['currency'] is None else f"'{values['currency']}'"},
             name = {'NULL' if values['name'] is None else f"'{values['name']}'"},
             country = {'NULL' if values['country'] is None else f"'{values['country']}'"},
