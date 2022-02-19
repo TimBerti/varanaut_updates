@@ -12,8 +12,11 @@ def get_eod(ticker, API_URL, API_TOKEN):
     Returns eod array of ticker.
     '''
 
-    url = API_URL + \
-        f'eod/{ticker}?api_token={API_TOKEN}&fmt=json&from={datetime.now().year-10}-01-01'
+    if ticker == 'GSPC.INDX':
+        url = API_URL + f'eod/{ticker}?api_token={API_TOKEN}&fmt=json'
+    else:
+        url = API_URL + \
+            f'eod/{ticker}?api_token={API_TOKEN}&fmt=json&from={datetime.now().year-10}-01-01'
 
     response = requests.get(url, timeout=60)
 

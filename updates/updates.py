@@ -38,7 +38,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
 
     stock_tickers = update_etfs(db, etf_tickers, EOD_URL, EOD_TOKEN)
     update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
-    stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH']
+    stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH', 'GSPC.INDX']
     update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
     update_options(db, stock_tickers, EOD_URL, EOD_TOKEN)
     update_cpi(db, NASDAQ_KEY)
