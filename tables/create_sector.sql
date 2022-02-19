@@ -77,6 +77,48 @@ SELECT sector,
     ) AS debt_to_revenue,
     PERCENTILE_CONT(0.5) WITHIN GROUP (
         ORDER BY current_ratio
-    ) AS current_ratio
+    ) AS current_ratio,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY price_earnings_growth
+    ) AS price_earnings_growth,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY price_sales_growth
+    ) AS price_sales_growth,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY revenue_growth_1y
+    ) AS revenue_growth_1y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY revenue_growth_3y
+    ) AS revenue_growth_3y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY revenue_growth_5y
+    ) AS revenue_growth_5y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY revenue_growth_9y
+    ) AS revenue_growth_9y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY earnings_growth_1y
+    ) AS earnings_growth_1y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY earnings_growth_3y
+    ) AS earnings_growth_3y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY earnings_growth_5y
+    ) AS earnings_growth_5y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY earnings_growth_9y
+    ) AS earnings_growth_9y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY dividend_growth_1y
+    ) AS dividend_growth_1y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY dividend_growth_3y
+    ) AS dividend_growth_3y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY dividend_growth_5y
+    ) AS dividend_growth_5y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY dividend_growth_9y
+    ) AS dividend_growth_9y
 FROM companies_display
 GROUP BY sector;

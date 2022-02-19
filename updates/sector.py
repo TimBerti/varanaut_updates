@@ -39,7 +39,21 @@ def update_sector(db):
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY debt_to_ebit) AS debt_to_ebit,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY debt_to_equity) AS debt_to_equity,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY debt_to_revenue) AS debt_to_revenue,
-                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY current_ratio) AS current_ratio
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY current_ratio) AS current_ratio,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price_earnings_growth) AS price_earnings_growth,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price_sales_growth) AS price_sales_growth,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue_growth_1y) AS revenue_growth_1y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue_growth_3y) AS revenue_growth_3y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue_growth_5y) AS revenue_growth_5y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY revenue_growth_9y) AS revenue_growth_9y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY earnings_growth_1y) AS earnings_growth_1y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY earnings_growth_3y) AS earnings_growth_3y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY earnings_growth_5y) AS earnings_growth_5y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY earnings_growth_9y) AS earnings_growth_9y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_1y) AS dividend_growth_1y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_3y) AS dividend_growth_3y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_5y) AS dividend_growth_5y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_9y) AS dividend_growth_9y
             FROM companies_display 
             GROUP BY sector
         )
@@ -70,7 +84,21 @@ def update_sector(db):
             debt_to_ebit = cte.debt_to_ebit,
             debt_to_equity = cte.debt_to_equity,
             debt_to_revenue = cte.debt_to_revenue,
-            current_ratio = cte.current_ratio
+            current_ratio = cte.current_ratio,
+            price_earnings_growth = cte.price_earnings_growth,
+            price_sales_growth = cte.price_sales_growth,
+            revenue_growth_1y = cte.revenue_growth_1y,
+            revenue_growth_3y = cte.revenue_growth_3y,
+            revenue_growth_5y = cte.revenue_growth_5y,
+            revenue_growth_9y = cte.revenue_growth_9y,
+            earnings_growth_1y = cte.earnings_growth_1y,
+            earnings_growth_3y = cte.earnings_growth_3y,
+            earnings_growth_5y = cte.earnings_growth_5y,
+            earnings_growth_9y = cte.earnings_growth_9y,
+            dividend_growth_1y = cte.dividend_growth_1y,
+            dividend_growth_3y = cte.dividend_growth_3y,
+            dividend_growth_5y = cte.dividend_growth_5y,
+            dividend_growth_9y = cte.dividend_growth_9y
         FROM cte
         WHERE s.sector = cte.sector
         ;
