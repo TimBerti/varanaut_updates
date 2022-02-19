@@ -749,7 +749,7 @@ def update_companies_display(db):
             ev = market_cap + short_long_term_debt_total - cash
         ;
         
-        -- Price Ratios
+        -- Market Cap Ratios
 
         UPDATE companies_display
         SET 
@@ -759,10 +759,11 @@ def update_companies_display(db):
             price_ebit = CASE WHEN ebit > 0 THEN market_cap / NULLIF(ebit, 0) ELSE NULL END,
             price_sales = market_cap / NULLIF(total_revenue, 0),
             price_book = CASE WHEN total_assets - total_liabilities > 0 THEN market_cap / NULLIF(total_assets - total_liabilities, 0) ELSE NULL END,
-            price_cash_flow = CASE WHEN free_cashflow > 0 THEN market_cap / NULLIF(free_cashflow, 0) ELSE NULL END
+            price_cash_flow = CASE WHEN free_cashflow > 0 THEN market_cap / NULLIF(free_cashflow, 0) ELSE NULL END,
+            dividend_yield = 100 * ABS(dividends_paid) / NULLIF(market_cap, 0)
         ;
 
-        -- Price Ratio Ranker
+        -- Market Cap Ratio Ranker
 
         WITH cte AS (
             SELECT
@@ -798,7 +799,11 @@ def update_companies_display(db):
                 PERCENT_RANK() OVER (
                     PARTITION BY (ev_ebitda IS NOT NULL)
                     ORDER BY ev_ebitda DESC
-                ) AS ev_ebitda_ranker
+                ) AS ev_ebitda_ranker,
+                PERCENT_RANK() OVER (
+                    PARTITION BY (dividend_yield IS NOT NULL)
+                    ORDER BY dividend_yield DESC
+                ) AS dividend_yield_ranker
             FROM companies_display
         )
         UPDATE companies_display c
@@ -810,7 +815,8 @@ def update_companies_display(db):
             price_book_ranker = cte.price_book_ranker,
             price_cash_flow_ranker = cte.price_cash_flow_ranker,
             ev_ebit_ranker = cte.ev_ebit_ranker,
-            ev_ebitda_ranker = cte.ev_ebitda_ranker
+            ev_ebitda_ranker = cte.ev_ebitda_ranker,
+            dividend_yield_ranker = cte.dividend_yield_ranker
         FROM cte
         WHERE c.ticker = cte.ticker;
 
