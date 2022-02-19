@@ -1,3 +1,4 @@
+from updates.sector import update_sector
 from .fundamentals import update_fundamentals
 from .figures_annual import update_annual_figures
 from .figures_quarterly import update_quarterly_figures
@@ -14,6 +15,7 @@ from .revenue import update_revenue
 from .operating_margin import update_operating_margin
 from .beta import update_beta
 from .rsi import update_rsi_180
+from .sector import update_sector
 from .scores import update_scores
 from .fama_french import update_fama_french_factors, update_fama_french_regressions
 from .cluster import update_clusters, update_cluster_correlation
@@ -50,6 +52,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     update_rsi_180(db)
     update_scores(db)
     update_companies_display(db)
+    update_sector(db)
     update_risk_factors(db)
     update_fama_french_factors(db)
     update_fama_french_regressions(db)
