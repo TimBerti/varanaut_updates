@@ -310,5 +310,9 @@ CREATE TABLE companies_display (
     interest_expense double precision,
     wacc double precision,
     dividend_consistency double precision,
+    net_working_capital double precision,
+    retained_earnings double precision,
+    altman_z_score double precision,
+    beneish_m_score double precision,
     PRIMARY KEY (ticker)
 )

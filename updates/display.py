@@ -84,6 +84,8 @@ def update_companies_display(db):
             total_current_liabilities,
             total_assets,
             total_current_assets,
+            net_working_capital,
+            retained_earnings,
             short_long_term_debt_total,
             cash,
             interest_expense,
@@ -299,6 +301,8 @@ def update_companies_display(db):
             cte2.total_current_liabilities,
             cte2.total_assets,
             cte2.total_current_assets,
+            cte2.net_working_capital,
+            cte2.retained_earnings,
             cte2.short_long_term_debt_total,
             cte2.cash,
             cte2.interest_expense_ttm,
@@ -516,6 +520,8 @@ def update_companies_display(db):
             total_current_liabilities = EXCLUDED.total_current_liabilities,
             total_assets = EXCLUDED.total_assets,
             total_current_assets = EXCLUDED.total_current_assets,
+            net_working_capital = EXCLUDED.net_working_capital,
+            retained_earnings = EXCLUDED.retained_earnings,
             short_long_term_debt_total = EXCLUDED.short_long_term_debt_total,
             cash = EXCLUDED.cash,
             interest_expense = EXCLUDED.interest_expense,
@@ -920,7 +926,14 @@ def update_companies_display(db):
                 CASE WHEN gross_profit_margin_change >= 1 THEN 1 ELSE 0 END + 
                 CASE WHEN asset_turnover_change >= 1 THEN 1 ELSE 0 END
             ),
-            combined_score = relative_score_continuous / 8 * rsi_180 / 100
+            combined_score = relative_score_continuous / 8 * rsi_180 / 100,
+            altman_z_score = (
+                1.2 * net_working_capital / NULLIF(total_assets, 0) + 
+                1.4 * retained_earnings / NULLIF(total_assets, 0) + 
+                3.3 * ebit / NULLIF(total_assets, 0) + 
+                0.6 * market_cap / NULLIF(total_liabilities, 0) + 
+                1 * total_revenue / NULLIF(total_assets, 0)
+            )
         ;
             
         -- Volume deviation

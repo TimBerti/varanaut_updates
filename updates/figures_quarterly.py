@@ -24,7 +24,8 @@ def calculate_ttm(db):
                 SUM(total_cashflows_from_investing_activities) OVER w total_cashflows_from_investing_activities_ttm,
                 SUM(ebit) OVER w ebit_ttm,
                 SUM(ebitda) OVER w ebitda_ttm,
-                SUM(interest_expense) OVER w interest_expense_ttm
+                SUM(interest_expense) OVER w interest_expense_ttm,
+                SUM(retained_earnings) OVER w retained_earnings_ttm
             FROM companies_quarterly
             WINDOW w AS (
                 PARTITION BY ticker
@@ -43,7 +44,8 @@ def calculate_ttm(db):
             total_cashflows_from_investing_activities_ttm = ttm_table.total_cashflows_from_investing_activities_ttm,
             ebit_ttm = ttm_table.ebit_ttm,
             ebitda_ttm = ttm_table.ebitda_ttm,
-            interest_expense_ttm = ttm_table.interest_expense_ttm
+            interest_expense_ttm = ttm_table.interest_expense_ttm,
+            retained_earnings_ttm = ttm_table.retained_earnings_ttm
         FROM ttm_table
         WHERE 
             c.ticker = ttm_table.ticker

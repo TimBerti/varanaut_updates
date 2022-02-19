@@ -130,6 +130,7 @@ CREATE TABLE companies_quarterly (
     total_cashflows_from_investing_activities_ttm double precision,
     ebit_ttm double precision,
     research_development_ttm double precision,
+    retained_earnings_ttm double precision,
     market_cap double precision,
     market_cap_change double precision,
     market_cap_ranker double precision,
@@ -301,5 +302,6 @@ CREATE TABLE companies_quarterly (
     ev_ebit_ranker_change double precision,
     ev_ebitda_ranker_change double precision,
     interest_expense_ttm double precision,
+    altman_z_score double precision,
     PRIMARY KEY (ticker, time)
 )
