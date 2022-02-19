@@ -53,7 +53,15 @@ def update_sector(db):
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_1y) AS dividend_growth_1y,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_3y) AS dividend_growth_3y,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_5y) AS dividend_growth_5y,
-                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_9y) AS dividend_growth_9y
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_9y) AS dividend_growth_9y,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY daily_return) AS daily_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY weekly_return) AS weekly_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY monthly_return) AS monthly_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY quarterly_return) AS quarterly_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY semi_annual_return) AS semi_annual_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY annual_return) AS annual_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY two_year_return) AS two_year_return,
+                PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY three_year_return) AS three_year_return
             FROM companies_display 
             GROUP BY sector
         )
@@ -98,7 +106,15 @@ def update_sector(db):
             dividend_growth_1y = cte.dividend_growth_1y,
             dividend_growth_3y = cte.dividend_growth_3y,
             dividend_growth_5y = cte.dividend_growth_5y,
-            dividend_growth_9y = cte.dividend_growth_9y
+            dividend_growth_9y = cte.dividend_growth_9y,
+            daily_return = cte.daily_return,
+            weekly_return = cte.weekly_return,
+            monthly_return = cte.monthly_return,
+            quarterly_return = cte.quarterly_return,
+            semi_annual_return = cte.semi_annual_return,
+            annual_return = cte.annual_return,
+            two_year_return = cte.two_year_return,
+            three_year_return = cte.three_year_return
         FROM cte
         WHERE s.sector = cte.sector
         ;

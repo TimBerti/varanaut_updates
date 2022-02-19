@@ -119,6 +119,30 @@ SELECT sector,
     ) AS dividend_growth_5y,
     PERCENTILE_CONT(0.5) WITHIN GROUP (
         ORDER BY dividend_growth_9y
-    ) AS dividend_growth_9y
+    ) AS dividend_growth_9y,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY daily_return
+    ) AS daily_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY weekly_return
+    ) AS weekly_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY monthly_return
+    ) AS monthly_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY quarterly_return
+    ) AS quarterly_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY semi_annual_return
+    ) AS semi_annual_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY annual_return
+    ) AS annual_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY two_year_return
+    ) AS two_year_return,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (
+        ORDER BY three_year_return
+    ) AS three_year_return
 FROM companies_display
 GROUP BY sector;
