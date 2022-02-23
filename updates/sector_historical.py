@@ -56,7 +56,7 @@ def update_sector_historical(db):
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_5y) AS dividend_growth_5y,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY dividend_growth_9y) AS dividend_growth_9y
             FROM companies_display 
-            GROUP BY (sector, EXTRACT(year FROM time)
+            GROUP BY (sector, EXTRACT(year FROM time))
         )
         UPDATE sector_historical s
         SET    
