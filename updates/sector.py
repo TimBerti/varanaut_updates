@@ -14,6 +14,7 @@ def update_sector(db):
         WITH cte AS (
             SELECT 
                 sector, 
+                COUNT(*) AS count,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebit) AS ev_ebit,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebitda) AS ev_ebitda,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price_earnings) AS price_earnings,
@@ -67,6 +68,7 @@ def update_sector(db):
         )
         UPDATE sector s
         SET    
+            count = cte.count,
             ev_ebit = cte.ev_ebit,
             ev_ebitda = cte.ev_ebitda,
             price_earnings = cte.price_earnings,

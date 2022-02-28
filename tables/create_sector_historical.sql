@@ -1,5 +1,6 @@
 CREATE TABLE sector_historical AS
 SELECT sector,
+    COUNT(*) AS count,
     EXTRACT(
         year
         FROM time

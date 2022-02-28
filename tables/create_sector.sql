@@ -1,5 +1,6 @@
 CREATE TABLE sector AS
 SELECT sector,
+    COUNT(*) AS count,
     PERCENTILE_CONT(0.5) WITHIN GROUP (
         ORDER BY ev_ebit
     ) AS ev_ebit,

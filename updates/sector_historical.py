@@ -14,6 +14,7 @@ def update_sector_historical(db):
         WITH cte AS (
             SELECT 
                 sector, 
+                COUNT(*) AS count,
                 EXTRACT(year FROM time) AS year,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebit) AS ev_ebit,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebitda) AS ev_ebitda,
@@ -59,7 +60,8 @@ def update_sector_historical(db):
             GROUP BY (sector, EXTRACT(year FROM time))
         )
         UPDATE sector_historical s
-        SET    
+        SET  
+            count = cte.count,  
             ev_ebit = cte.ev_ebit,
             ev_ebitda = cte.ev_ebitda,
             price_earnings = cte.price_earnings,
