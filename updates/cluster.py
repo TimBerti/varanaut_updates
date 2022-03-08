@@ -24,28 +24,31 @@ def update_clusters(db):
             SMB_factor, 
             HML_factor, 
             CMA_factor, 
-            RMW_factor, 
-            excess_market_return_factor 
+            RMW_factor 
         from companies_display;
     '''
 
     df = pd.read_sql(sql, con=db.get_bind())
 
-    factors = ['smb_factor', 'hml_factor', 'cma_factor',
-               'rmw_factor', 'excess_market_return_factor']
+    df['norm'] = np.sqrt(
+        (df[['smb_factor', 'hml_factor', 'cma_factor', 'rmw_factor']]**2).sum(axis=1))
 
-    df[factors] = (df[factors] - df[factors].median()) / \
-        (df[factors].quantile(.75) - df[factors].quantile(.25))
-    df[factors] = df[factors].apply(sigmoid_scaler)
-    df.dropna(inplace=True)
+    df_normed = pd.DataFrame()
+    df_normed['ticker'] = df['ticker']
+    df_normed['smb_factor'] = df['smb_factor'] / df['norm']
+    df_normed['hml_factor'] = df['hml_factor'] / df['norm']
+    df_normed['cma_factor'] = df['cma_factor'] / df['norm']
+    df_normed['rmw_factor'] = df['rmw_factor'] / df['norm']
+
+    df_normed.dropna(inplace=True)
 
     kmeans = KMeans(n_clusters=6)
-    kmeans.fit(df[factors])
-    df['cluster'] = kmeans.predict(df[factors])
+    df_normed['cluster'] = kmeans.fit_predict(
+        df_normed[['smb_factor', 'hml_factor', 'cma_factor', 'rmw_factor']])
 
-    print(f'Workload: {len(df.index)}')
+    print(f'Workload: {len(df_normed.index)}')
 
-    for _, row in tqdm(df.iterrows()):
+    for _, row in tqdm(df_normed.iterrows()):
         sql = f'''
             UPDATE companies_display
             SET cluster = {row['cluster']}
