@@ -39,29 +39,31 @@ def update_etfs(db, etf_tickers, API_URL, API_TOKEN):
             if ticker == 'VTI':
                 tickers = holdings
 
-            values = {
-                'ticker': ticker,
-                'name': etf_data['General']['Name'],
-                'currency': etf_data['General']['CurrencyCode'],
-                'country': etf_data['General']['CountryName'],
-                'holdings': holdings
+            if len(holdings) > 20:
 
-            }
+                values = {
+                    'ticker': ticker,
+                    'name': etf_data['General']['Name'],
+                    'currency': etf_data['General']['CurrencyCode'],
+                    'country': etf_data['General']['CountryName'],
+                    'holdings': holdings
 
-            sql = f'''
-                INSERT INTO etf(ticker, name, currency, country, holdings) 
-                VALUES(:ticker, :name, :currency, :country, :holdings)
-                ON CONFLICT(ticker) DO
-                UPDATE SET 
-                    name = EXCLUDED.name,
-                    currency = EXCLUDED.currency,
-                    country = EXCLUDED.country,
-                    holdings = EXCLUDED.holdings
-                ;
-            '''
+                }
 
-            db.execute(sql, values)
-            db.commit()
+                sql = f'''
+                    INSERT INTO etf(ticker, name, currency, country, holdings) 
+                    VALUES(:ticker, :name, :currency, :country, :holdings)
+                    ON CONFLICT(ticker) DO
+                    UPDATE SET 
+                        name = EXCLUDED.name,
+                        currency = EXCLUDED.currency,
+                        country = EXCLUDED.country,
+                        holdings = EXCLUDED.holdings
+                    ;
+                '''
+
+                db.execute(sql, values)
+                db.commit()
 
     print(f'Finished etf update.')
 
