@@ -1,1 +1,1 @@
-Scheduled update for the Varanaut Database.
+Scheduled update for the Varanaut database.

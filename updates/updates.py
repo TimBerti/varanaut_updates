@@ -1,4 +1,3 @@
-from updates.sector import update_sector
 from .fundamentals import update_fundamentals
 from .figures_annual import update_annual_figures
 from .figures_quarterly import update_quarterly_figures
@@ -19,7 +18,7 @@ from .sector import update_sector
 from .sector_historical import update_sector_historical
 from .scores import update_scores
 from .fama_french import update_fama_french_factors, update_fama_french_regressions
-from .cluster import update_clusters, update_cluster_correlation
+from .cluster import update_clusters
 from .risk_factor import update_risk_factors
 from time import time
 from datetime import timedelta
@@ -37,6 +36,7 @@ def daily(db, EOD_URL, EOD_TOKEN, NASDAQ_KEY):
     etf_tickers = ['VTI', 'ESGV']
 
     stock_tickers = update_etfs(db, etf_tickers, EOD_URL, EOD_TOKEN)
+    # stock_tickers = ['AAPL']
     update_fundamentals(db, stock_tickers, EOD_URL, EOD_TOKEN)
     stock_tickers += ['SPY', 'US10Y.GBOND', 'GSG', 'SHY', 'VCSH', 'GSPC.INDX']
     update_eod(db, stock_tickers, EOD_URL, EOD_TOKEN)
