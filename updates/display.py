@@ -808,7 +808,7 @@ def update_companies_display(db):
                 ) AS ev_ebitda_ranker,
                 PERCENT_RANK() OVER (
                     PARTITION BY (dividend_yield IS NOT NULL)
-                    ORDER BY dividend_yield DESC
+                    ORDER BY dividend_yield
                 ) AS dividend_yield_ranker
             FROM companies_display
         )
