@@ -776,8 +776,8 @@ def update_companies_display(db):
                 ticker,
                 PERCENT_RANK() OVER (
                     PARTITION BY (implied_volatility IS NOT NULL)
-                    ORDER BY implied_volatility
-                ) AS implied_volatility_ranker DESC,
+                    ORDER BY implied_volatility DESC
+                ) AS implied_volatility_ranker,
                 PERCENT_RANK() OVER (
                     PARTITION BY (price_earnings IS NOT NULL)
                     ORDER BY price_earnings DESC
