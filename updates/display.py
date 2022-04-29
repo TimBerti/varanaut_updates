@@ -777,7 +777,7 @@ def update_companies_display(db):
                 PERCENT_RANK() OVER (
                     PARTITION BY (implied_volatility IS NOT NULL)
                     ORDER BY implied_volatility
-                ) AS implied_volatility_ranker,
+                ) AS implied_volatility_ranker DESC,
                 PERCENT_RANK() OVER (
                     PARTITION BY (price_earnings IS NOT NULL)
                     ORDER BY price_earnings DESC
