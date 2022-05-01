@@ -8,6 +8,8 @@ def update_etfs(db, etf_tickers, API_URL, API_TOKEN):
     Updates etf table
     '''
 
+    tickers = []
+
     workload = len(etf_tickers)
 
     print(f'Started etf update, workload: {workload}')
