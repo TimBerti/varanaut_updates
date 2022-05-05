@@ -1548,7 +1548,7 @@ def update_fundamentals(db, tickers, API_URL, API_TOKEN):
             try:
                 fundamentals = get_fundamentals(ticker, API_URL, API_TOKEN)
                 break
-            except requests.exceptions.ReadTimeout:
+            except:
                 if i < 9:
                     continue
                 else:
