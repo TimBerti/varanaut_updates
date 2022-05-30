@@ -169,10 +169,13 @@ def update_display(db, ticker, fundamentals):
             fundamentals['Financials']['Cash_Flow'])
         income_statement = json.dumps(
             fundamentals['Financials']['Income_Statement'])
+        outstanding_shares_object = json.dumps(
+            fundamentals['outstandingShares'])
     except:
         balance_sheet = None
         cash_flow_statement = None
         income_statement = None
+        outstanding_shares_object = None
 
     sql = f'''
         INSERT INTO companies_display (
@@ -186,6 +189,7 @@ def update_display(db, ticker, fundamentals):
             balance_sheet = {'NULL' if balance_sheet is None else f"'{balance_sheet}'"},
             cash_flow_statement = {'NULL' if cash_flow_statement is None else f"'{cash_flow_statement}'"},
             income_statement = {'NULL' if income_statement is None else f"'{income_statement}'"},
+            outstanding_shares_object = {'NULL' if outstanding_shares_object is None else f"'{outstanding_shares_object}'"},
             currency = {'NULL' if values['currency'] is None else f"'{values['currency']}'"},
             name = {'NULL' if values['name'] is None else f"'{values['name']}'"},
             country = {'NULL' if values['country'] is None else f"'{values['country']}'"},

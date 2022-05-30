@@ -317,5 +317,6 @@ CREATE TABLE companies_display (
     balance_sheet jsonb,
     cash_flow_statement jsonb,
     income_statement jsonb,
+    outstanding_shares_object jsonb,
     PRIMARY KEY (ticker)
 )
