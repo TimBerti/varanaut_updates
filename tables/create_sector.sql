@@ -1,5 +1,5 @@
 CREATE TABLE sector AS
-SELECT gic_sector AS sector,
+SELECT sector,
     COUNT(*) AS count,
     PERCENTILE_CONT(0.5) WITHIN GROUP (
         ORDER BY ev_ebit
@@ -146,4 +146,4 @@ SELECT gic_sector AS sector,
         ORDER BY three_year_return
     ) AS three_year_return
 FROM companies_display
-GROUP BY gic_sector;
+GROUP BY sector;
