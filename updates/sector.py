@@ -13,7 +13,7 @@ def update_sector(db):
     sql = '''
         WITH cte AS (
             SELECT 
-                sector, 
+                gic_sector, 
                 COUNT(*) AS count,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebit) AS ev_ebit,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ev_ebitda) AS ev_ebitda,
@@ -64,7 +64,7 @@ def update_sector(db):
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY two_year_return) AS two_year_return,
                 PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY three_year_return) AS three_year_return
             FROM companies_display 
-            GROUP BY sector
+            GROUP BY gic_sector
         )
         UPDATE sector s
         SET    
@@ -118,7 +118,7 @@ def update_sector(db):
             two_year_return = cte.two_year_return,
             three_year_return = cte.three_year_return
         FROM cte
-        WHERE s.sector = cte.sector
+        WHERE s.gic_sector = cte.gic_sector
         ;
     '''
 
