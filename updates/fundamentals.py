@@ -44,11 +44,11 @@ def update_display(db, ticker, fundamentals):
     except:
         values[f'country'] = None
     try:
-        values[f'sector'] = fundamentals['General']['Sector']
+        values[f'sector'] = fundamentals['General']['GicSector']
     except:
         values[f'sector'] = None
     try:
-        values[f'industry'] = fundamentals['General']['Industry']
+        values[f'industry'] = fundamentals['General']['GicIndustry']
     except:
         values[f'industry'] = None
     try:
@@ -248,11 +248,11 @@ def update_annual(db, ticker, fundamentals):
         except:
             values[f'currency'] = None
         try:
-            values[f'sector'] = fundamentals['General']['Sector']
+            values[f'sector'] = fundamentals['General']['GicSector']
         except:
             values[f'sector'] = None
         try:
-            values[f'industry'] = fundamentals['General']['Industry']
+            values[f'industry'] = fundamentals['General']['GicIndustry']
         except:
             values[f'industry'] = None
 
@@ -903,11 +903,11 @@ def update_quarterly(db, ticker, fundamentals):
         except:
             values[f'currency'] = None
         try:
-            values[f'sector'] = fundamentals['General']['Sector']
+            values[f'sector'] = fundamentals['General']['GicSector']
         except:
             values[f'sector'] = None
         try:
-            values[f'industry'] = fundamentals['General']['Industry']
+            values[f'industry'] = fundamentals['General']['GicIndustry']
         except:
             values[f'industry'] = None
 
